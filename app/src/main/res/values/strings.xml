@@ -3,4 +3,11 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Party</string>
     <string name="title_notifications">Explore</string>
+
+    <!-- Party Strings -->
+    <string name="party_title">Party Feature</string>
+    <string name="create_party">Create Party</string>
+    <string name="join_party">Join Party</string>
+
+    <string name="default_web_client_id" translatable="false">728293663830-dmhbef8i0gdtnqt9jmru4cokhnkmn1ev.apps.googleusercontent.com</string>
 </resources>

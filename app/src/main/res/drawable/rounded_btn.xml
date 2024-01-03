@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <solid android:color="@color/btnColor"/> <!-- This is a placeholder green color; adjust as needed -->
+    <corners android:radius="30dp"/> <!-- Increased radius for more rounded corners -->
+    <stroke android:color="@color/btnColor" android:width="2dp"/> <!-- Adjust the color and width as needed -->
+    <size android:height="48dp"/> <!-- This sets a default height; adjust as needed -->
+</shape>
