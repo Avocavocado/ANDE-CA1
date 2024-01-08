@@ -9,5 +9,9 @@
     <string name="create_party">Create Party</string>
     <string name="join_party">Join Party</string>
 
+    <!-- Login Strings -->
+    <string name="page_title">Login</string>
+    <string name="logout_title">Logout</string>
+
     <string name="default_web_client_id" translatable="false">728293663830-dmhbef8i0gdtnqt9jmru4cokhnkmn1ev.apps.googleusercontent.com</string>
 </resources>

@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -21,6 +23,7 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -31,6 +34,14 @@ public class LoginPage extends AppCompatActivity {
     FirebaseFirestore fstore;
     GoogleSignInOptions gso;
     GoogleSignInClient gsc;
+
+    public String userID;
+    FirebaseAuth auth = FirebaseAuth.getInstance();
+    FirebaseUser user = auth.getCurrentUser();
+
+    EditText editTextEmailPhone = findViewById(R.id.emailEditText);
+    EditText editTextPassword = findViewById(R.id.passwordEditText);
+    Button buttonLogin = findViewById(R.id.loginButton);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

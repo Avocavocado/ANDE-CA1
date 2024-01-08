@@ -43,6 +43,18 @@
             android:exported="true"
             android:label="Login Page">
         </activity>
+
+        <activity
+            android:name=".CreateParty"
+            android:exported="true"
+            android:label="Login Page">
+        </activity>
+
+        <activity
+            android:name=".JoinParty"
+            android:exported="true"
+            android:label="Login Page">
+        </activity>
     </application>
 
 </manifest>

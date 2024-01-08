@@ -29,7 +29,7 @@
     <!-- Join Party Button -->
 
     <Button
-        android:id="@+id/joinPartyBtn"
+        android:id="@+id/createPartyBtn"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -48,7 +48,7 @@
         app:layout_constraintTop_toBottomOf="@+id/PartyTitle" />
 
     <Button
-        android:id="@+id/startPartyBtn"
+        android:id="@+id/joinPartyBtn"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -64,6 +64,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/joinPartyBtn" />
+        app:layout_constraintTop_toBottomOf="@+id/createPartyBtn" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
