@@ -5,12 +5,17 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+
+import android.widget.TextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.ande_munch.methods.LoginMethods;
+import com.example.ande_munch.ui.home.HomeFragment;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -30,7 +35,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 public class LoginPage extends AppCompatActivity {
 
     MaterialCardView googleBtn;
-    FirebaseAuth fAuth;
+    FirebaseAuth mAuth;
     FirebaseFirestore fstore;
     GoogleSignInOptions gso;
     GoogleSignInClient gsc;
@@ -38,20 +43,27 @@ public class LoginPage extends AppCompatActivity {
     public String userID;
     FirebaseAuth auth = FirebaseAuth.getInstance();
     FirebaseUser user = auth.getCurrentUser();
+    EditText editTextEmail;
+    EditText editTextPassword;
+    Button buttonLogin;
 
-    EditText editTextEmailPhone = findViewById(R.id.emailEditText);
-    EditText editTextPassword = findViewById(R.id.passwordEditText);
-    Button buttonLogin = findViewById(R.id.loginButton);
+    // New Instances
+    private LoginMethods loginMethods = new LoginMethods();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_page);
 
+        // Initialize your UI elements here
+        editTextEmail = findViewById(R.id.emailEditText);
+        editTextPassword = findViewById(R.id.passwordEditText);
+        buttonLogin = findViewById(R.id.loginButton);
+
         FirebaseApp.initializeApp(this);
-        fAuth = FirebaseAuth.getInstance();
+        mAuth = FirebaseAuth.getInstance();
         // GoogleUI Firebase Sign In
-        if (fAuth.getCurrentUser() != null) {
+        if (mAuth.getCurrentUser() != null) {
             startActivity(new Intent(this, MainActivity.class));
             finish();
         }
@@ -71,6 +83,42 @@ public class LoginPage extends AppCompatActivity {
             }
         });
 
+        buttonLogin.setOnClickListener(v -> {
+            String email = editTextEmail.getText().toString();
+            String password = editTextPassword.getText().toString();
+
+            if (TextUtils.isEmpty(email)) {
+                Toast.makeText(LoginPage.this, "Email is required.", Toast.LENGTH_SHORT).show();
+                Log.e("LoginError", "Email field is empty.");
+                return;
+            }
+
+            if (TextUtils.isEmpty(password)) {
+                Toast.makeText(LoginPage.this, "Password is required.", Toast.LENGTH_SHORT).show();
+                Log.e("LoginError", "Password field is empty.");
+                return;
+            }
+
+            // Authenticate the user
+            mAuth.signInWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            // Sign in success
+                            Log.d("LoginSuccess", "signInWithEmail:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            Toast.makeText(LoginPage.this, "Authentication successful.", Toast.LENGTH_SHORT).show();
+                            goHomePage();
+                        } else {
+                            // Sign in failed
+                            Log.w("LoginFailure", "signInWithEmail:failure", task.getException());
+                            Toast.makeText(LoginPage.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        });
+
+        // Redirect to register page
+        TextView signUpText = findViewById(R.id.signUpText);
+        signUpText.setOnClickListener(v -> goRegisterPage());
     }
 
     public void signIn() {
@@ -95,7 +143,7 @@ public class LoginPage extends AppCompatActivity {
 
     private void firebaseAuth(String idToken) {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
-        fAuth.signInWithCredential(credential)
+        mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
@@ -112,6 +160,12 @@ public class LoginPage extends AppCompatActivity {
 
     public void goHomePage() {
         Intent intent = new Intent(LoginPage.this, MainActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    public void goRegisterPage() {
+        Intent intent = new Intent(LoginPage.this, RegisterPage.class);
         startActivity(intent);
         finish();
     }

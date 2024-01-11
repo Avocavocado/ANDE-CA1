@@ -55,6 +55,12 @@
             android:exported="true"
             android:label="Login Page">
         </activity>
+
+        <activity
+            android:name=".RegisterPage"
+            android:exported="true"
+            android:label="Login Page">
+        </activity>
     </application>
 
 </manifest>
