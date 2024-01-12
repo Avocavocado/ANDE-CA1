@@ -16,14 +16,17 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.ande_munch.LoginPage;
 import com.example.ande_munch.databinding.FragmentHomeBinding;
+import com.example.ande_munch.methods.LoginMethods;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 public class HomeFragment extends Fragment {
 
@@ -31,7 +34,9 @@ public class HomeFragment extends Fragment {
     FirebaseAuth auth = FirebaseAuth.getInstance();
     FirebaseUser user = auth.getCurrentUser();
     FirebaseFirestore db;
-    CollectionReference usersRef;
+
+    // New Instances
+    private LoginMethods loginMethods = new LoginMethods();
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -46,7 +51,7 @@ public class HomeFragment extends Fragment {
 
         String email = getUserEmail();
         System.out.println("Email: " + email);
-        printAllUserEmails(email);
+        CheckAndAddUser(email);
 
         // Implement button click listener for logging out
         binding.logoutBtn.setOnClickListener(v -> signOutAndQuit());
@@ -73,28 +78,36 @@ public class HomeFragment extends Fragment {
     }
 
     // Method to check if email exist, if not, then create a new user
-    public void printAllUserEmails(String email) {
+    public void CheckAndAddUser(String email) {
         db = FirebaseFirestore.getInstance();
 
-        db.collection("Users")
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        // Loop through all the users
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            // Check if the user email exist
-                            if (document.getId().equals(email)) {
-                                System.out.println("User email exist");
-                                return;
-                            } else {
-                                // If user doesn't exist then create a new user
-                                System.out.println("User email doesn't exist");
-                            }
-                        }
-                    } else {
-                        System.out.println("Error getting documents: " + task.getException());
-                    }
-                });
+        loginMethods.checkDbForEmail(email).thenAccept(userExists -> {
+            if (!userExists) {
+                System.out.println("User email doesn't exist");
+                createUser(email);
+            } else {
+                System.out.println("User email exist");
+            }
+        }).exceptionally(e -> {
+            System.out.println("Error checking user in database: " + e);
+            return null;
+        });
+    }
+
+    public void createUser(String email) {
+        db = FirebaseFirestore.getInstance();
+        DocumentReference newUserRef = db.collection("Users").document(email);
+
+        // Adding user fields to the datastore
+        Map<String, Object> newUserMap = new HashMap<>();
+        newUserMap.put("Diet", "");
+        newUserMap.put("Password", "");
+        newUserMap.put("ProfileImage", "");
+        newUserMap.put("Username", "");
+
+        newUserRef.set(newUserMap)
+                .addOnSuccessListener(aVoid -> System.out.println("User successfully created!"))
+                .addOnFailureListener(e -> System.out.println("Error creating user: " + e));
     }
 
     @Override

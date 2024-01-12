@@ -84,10 +84,15 @@
 
         <TextView
             android:id="@+id/signUpText"
+            android:layout_marginStart="5dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text=" Sign Up"
-            android:textColor="@color/bright_pink" />
+            android:text="Sign Up"
+            android:textColor="@color/bright_pink"
+            android:clickable="true"
+            android:focusable="true"
+            android:onClick="onSignUpTextClick" />
+
     </LinearLayout>
 
     <com.google.android.material.card.MaterialCardView

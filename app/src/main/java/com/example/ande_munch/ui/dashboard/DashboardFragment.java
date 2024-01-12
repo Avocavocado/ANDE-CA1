@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
+import android.widget.Toast;
 
 import java.util.Map;
 import java.util.Random;
@@ -24,6 +25,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -33,8 +35,8 @@ public class DashboardFragment extends Fragment {
     private FragmentDashboardBinding binding;
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     private static final int CODE_LENGTH = 4;
-    FirebaseAuth auth = FirebaseAuth.getInstance();
-    FirebaseUser user = auth.getCurrentUser();
+    FirebaseAuth mauth = FirebaseAuth.getInstance();
+    FirebaseUser currentUser = mauth.getCurrentUser();
     FirebaseFirestore db;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -101,7 +103,15 @@ public class DashboardFragment extends Fragment {
                         HashMap<String, Object> userDetails = entry.getValue();
 
                         // Add each user as a document to the 'Users' sub-collection of the party
-                        partyDocumentRef.collection("Users").document(userEmail).set(userDetails).addOnSuccessListener(aVoidUser -> Log.d("CreateParty", "User added to party: " + userEmail)).addOnFailureListener(e -> Log.w("CreateParty", "Error adding user to party", e));
+                        partyDocumentRef.collection("Users")
+                                .document(userEmail)
+                                .set(userDetails)
+                                .addOnSuccessListener(aVoidUser ->
+                                        Log.d("CreateParty", "User added to party: " + userEmail)
+                                )
+                                .addOnFailureListener(e ->
+                                        Log.w("CreateParty", "Error adding user to party", e)
+                                );
                     }
                 }).addOnFailureListener(e -> Log.w("CreateParty", "Error creating party document", e));
             }
@@ -111,36 +121,47 @@ public class DashboardFragment extends Fragment {
     public void getUserEmail(OnUserDataFetchedListener listener) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        // Get the Users collection
-        db.collection("Users").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+        if (currentUser != null) {
+            String currentUserEmail = currentUser.getEmail();
+
+            db.collection("Users").get().addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
+                    boolean userFound = false;
                     HashMap<String, HashMap<String, Object>> userDataMap = new HashMap<>();
 
                     for (QueryDocumentSnapshot document : task.getResult()) {
-                        // Use the Gmail account as the key for the userDataMap
-                        String gmailAccount = document.getId();
-                        Log.d("TAG", gmailAccount + " => " + document.getData());
+                        String emailAccount = document.getId();
 
-                        // Create a nested HashMap to store each user's details
-                        HashMap<String, Object> userDetails = new HashMap<>();
-                        userDetails.put("Diet", document.getString("Diet"));
-                        userDetails.put("ProfileImage", document.getString("ProfileImage"));
-                        userDetails.put("Username", document.getString("Username"));
+                        if (emailAccount.equals(currentUserEmail)) {
+                            userFound = true;
 
-                        // Put the nested HashMap into the userDataMap with the Gmail as the key
-                        userDataMap.put(gmailAccount, userDetails);
+                            Log.d("TAG", emailAccount + " => " + document.getData());
+
+                            HashMap<String, Object> userDetails = new HashMap<>();
+                            userDetails.put("Diet", document.getString("Diet"));
+                            userDetails.put("ProfileImage", document.getString("ProfileImage"));
+                            userDetails.put("Username", document.getString("Username"));
+
+                            userDataMap.put(emailAccount, userDetails);
+                            break; // Stop the loop as the user is found
+                        }
                     }
 
-                    // Use the callback to pass the userDataMap back
-                    listener.onUserDataFetched(userDataMap);
-
+                    if (userFound) {
+                        listener.onUserDataFetched(userDataMap);
+                    } else {
+                        Log.e("TAG", "User not found: " + currentUserEmail);
+                        Toast.makeText(getActivity(), "User not found", Toast.LENGTH_SHORT).show();
+                    }
                 } else {
-                    Log.d("TAG", "Error getting documents: ", task.getException());
+                    Log.e("TAG", "Error getting documents: ", task.getException());
+                    Toast.makeText(getActivity(), "Error fetching data", Toast.LENGTH_SHORT).show();
                 }
-            }
-        });
+            });
+        } else {
+            Log.e("TAG", "No current user logged in");
+            Toast.makeText(getActivity(), "No user logged in", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public String PartyCodeGenerator() {
