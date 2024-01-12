@@ -14,4 +14,7 @@
     <string name="logout_title">Logout</string>
 
     <string name="default_web_client_id" translatable="false">728293663830-dmhbef8i0gdtnqt9jmru4cokhnkmn1ev.apps.googleusercontent.com</string>
+    <string name="welcomeText">What would you like to eat today?</string>
+    <string name="searchHintText">Search for restaurants...</string>
+    <string name="profileButtonText">profile settings button</string>
 </resources>

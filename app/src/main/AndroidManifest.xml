@@ -57,6 +57,12 @@
         </activity>
 
         <activity
+            android:name=".ExploreRestaurants"
+            android:exported="true"
+            android:label="Explore Restaurants">
+        </activity>
+
+        <activity
             android:name=".RegisterPage"
             android:exported="true"
             android:label="Login Page">

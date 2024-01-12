@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "728293663830",
+    "project_id": "munch-e31d6",
+    "storage_bucket": "munch-e31d6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:728293663830:android:0f93cdce224d83c1ff07f7",
+        "android_client_info": {
+          "package_name": "com.example.ande_munch"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "728293663830-uj30ink930oodb17p45jh6skegc086v4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.ande_munch",
+            "certificate_hash": "b42b7af7db2765358ff57eebf2fb602243fec43e"
+          }
+        },
+        {
+          "client_id": "728293663830-dmhbef8i0gdtnqt9jmru4cokhnkmn1ev.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAFWm6nuDYd2RaGNS4rbGpiF-8sQcwtXJI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "728293663830-dmhbef8i0gdtnqt9jmru4cokhnkmn1ev.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

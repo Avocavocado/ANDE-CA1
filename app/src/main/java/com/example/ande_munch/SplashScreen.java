@@ -43,13 +43,13 @@ public class SplashScreen extends AppCompatActivity {
                     progressBar.setProgress(progressPercentage);
                     textViewPercentage.setText(progressPercentage + "%");
 
-                    handler.postDelayed(this, 40);
+                    handler.postDelayed(this, 10);
                 } else {
 
                     handler.postDelayed(() -> {
                         startActivity(new Intent(SplashScreen.this, LoginPage.class));
                         finish();
-                    }, 500);
+                    }, 100);
                 }
             }
         };
