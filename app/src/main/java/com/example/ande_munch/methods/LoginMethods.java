@@ -1,13 +1,20 @@
 package com.example.ande_munch.methods;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 public class LoginMethods {
     private FirebaseFirestore db;
+    FirebaseAuth auth = FirebaseAuth.getInstance();
+    FirebaseUser user = auth.getCurrentUser();
 
     public LoginMethods() {
         db = FirebaseFirestore.getInstance(); // Initialize FirebaseFirestore here
@@ -68,4 +75,28 @@ public class LoginMethods {
 
         return passwordMatchFuture;
     }
+
+    // Method to get the current user email
+    public String getUserEmail() {
+        return user.getEmail();
+    }
+
+    // Method to create a new user record if one is not yet available
+    public void createUser(String email) {
+        db = FirebaseFirestore.getInstance();
+        DocumentReference newUserRef = db.collection("Users").document(email);
+
+        // Adding user fields to the datastore
+        Map<String, Object> newUserMap = new HashMap<>();
+        newUserMap.put("Diet", "");
+        newUserMap.put("Password", "");
+        newUserMap.put("ProfileImage", "");
+        newUserMap.put("Username", "");
+
+        newUserRef.set(newUserMap)
+                .addOnSuccessListener(aVoid -> System.out.println("User successfully created!"))
+                .addOnFailureListener(e -> System.out.println("Error creating user: " + e));
+    }
+
+
 }

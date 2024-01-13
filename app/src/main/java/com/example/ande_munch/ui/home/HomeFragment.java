@@ -1,6 +1,5 @@
 package com.example.ande_munch.ui.home;
 
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,103 +12,70 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.ande_munch.CuisineButtonAdapter;
 import com.example.ande_munch.FilterActivity;
-import com.example.ande_munch.LoginPage;
 import com.example.ande_munch.R;
 import com.example.ande_munch.RestaurantCardAdapter;
 import com.example.ande_munch.databinding.ExploreRestaurantsBinding;
 import com.example.ande_munch.methods.LoginMethods;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
+
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class HomeFragment extends Fragment {
-
+    private static final String TAG = "ExploreRestaurants";
     private @NonNull ExploreRestaurantsBinding binding;
-    FirebaseAuth auth = FirebaseAuth.getInstance();
-    // FirebaseUser user = auth.getCurrentUser();
-    FirebaseFirestore db;
+    private FirebaseAuth auth = FirebaseAuth.getInstance();
+    private FirebaseUser user = auth.getCurrentUser();
+    private FirebaseFirestore db;
+    private RecyclerView recyclerView;
+    private RestaurantCardAdapter adapter;
 
-    // New Instances
     private LoginMethods loginMethods = new LoginMethods();
-    CollectionReference usersRef;
-    private static final String TAG = "ExploreRestuarants";
+
     private List<String> urls =
-            Arrays.asList("bbq","chinese","fast_food","hawker","indian","japanese","mexican","seafood","thai","western");
+            Arrays.asList("bbq", "chinese", "fast_food", "hawker", "indian", "japanese", "mexican", "seafood", "thai", "western");
     private List<String> cuisines =
-            Arrays.asList("BBQ","Chinese","Fast Food","Hawker","Indian","Japanese","Mexican","Seafood","Thai","Western");
+            Arrays.asList("BBQ", "Chinese", "Fast Food", "Hawker", "Indian", "Japanese", "Mexican", "Seafood", "Thai", "Western");
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        HomeViewModel homeViewModel =
-                new ViewModelProvider(this).get(HomeViewModel.class);
+        HomeViewModel homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
         binding = ExploreRestaurantsBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        //final TextView textView = binding.textHome;
-        //homeViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+        String email = loginMethods.getUserEmail();
+        Log.d(TAG, "Email: " + email);
+        CheckAndAddUser(email);
 
-        //String email = getUserEmail();
-        //System.out.println("Email: " + email);
-        //CheckAndAddUser(email);
+        // Initialize RecyclerView and Adapter
+        recyclerView = binding.RestaurantCards;
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        recyclerView.setLayoutManager(layoutManager);
+        getRestaurantCardData();
 
-        // Implement button click listener for logging out
-        //binding.logoutBtn.setOnClickListener(v -> signOutAndQuit());
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("Restaurants")
-                .get()
-                .addOnSuccessListener(result -> {
-                    for (DocumentSnapshot document : result.getDocuments()) {
-                        Log.i(TAG,document.getId() + " => " + document.getData());
-                    }
-
-                    //Restuarant Card Layout
-                    RecyclerView recyclerView = root.findViewById(R.id.RestaurantCards);
-                    LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
-                    recyclerView.setLayoutManager(layoutManager);
-                    RestaurantCardAdapter rcAdapter = new RestaurantCardAdapter(requireContext(), result.getDocuments());
-                    rcAdapter.setOnItemClickListener(new RestaurantCardAdapter.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(String rid) {
-                            Toast.makeText(requireContext(), "Item clicked: " + rid, Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                    recyclerView.setAdapter(rcAdapter);
-
-                    //Cuisine Buttons Layout
-                    RecyclerView cuisineBtns = root.findViewById(R.id.cuisineBtns);
-                    LinearLayoutManager cuisineLayoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
-                    cuisineBtns.setLayoutManager(cuisineLayoutManager);
-                    CuisineButtonAdapter cbAdapter = new CuisineButtonAdapter(requireContext(),cuisines, urls);
-                    cbAdapter.setOnItemClickListener(new CuisineButtonAdapter.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(String cuisineName) {
-                            Toast.makeText(requireContext(), "Item clicked: " + cuisineName, Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                    cuisineBtns.setAdapter(cbAdapter);
-
-
-                })
-                .addOnFailureListener(exception -> {
-                    Log.i(TAG, "Error getting documents." + exception);
-                })
-                .addOnFailureListener(result -> {
-                    Log.e(TAG,"Firestore trollin: "+ result);
-                });
+        //Cuisine Buttons Layout
+        RecyclerView cuisineBtns = root.findViewById(R.id.cuisineBtns);
+        LinearLayoutManager cuisineLayoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
+        cuisineBtns.setLayoutManager(cuisineLayoutManager);
+        CuisineButtonAdapter cbAdapter = new CuisineButtonAdapter(requireContext(), cuisines, urls);
+        cbAdapter.setOnItemClickListener(new CuisineButtonAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(String cuisineName) {
+                Toast.makeText(requireContext(), "Item clicked: " + cuisineName, Toast.LENGTH_SHORT).show();
+            }
+        });
+        cuisineBtns.setAdapter(cbAdapter);
 
         ImageButton filterBtn = root.findViewById(R.id.filterButton);
         filterBtn.setOnClickListener(new View.OnClickListener() {
@@ -123,64 +89,47 @@ public class HomeFragment extends Fragment {
         return root;
     }
 
-//    private void signOutAndQuit() {
-//        // Logout of application
-//        FirebaseAuth.getInstance().signOut();
-//
-//        // Navigate back to login page
-//        if (getActivity() != null) {
-//            Intent intent = new Intent(getActivity(), LoginPage.class);
-//            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//            startActivity(intent);
-//            getActivity().finish();
-//        }
-//    }
-//
-//    // Method to get the current user email
-////    public String getUserEmail() {
-////        return user.getEmail();
-////    }
-//
-//    // Method to check if email exist, if not, then create a new user
-//    public void printAllUserEmails(String email) {
-//        db = FirebaseFirestore.getInstance();
-//
-//        db.collection("Users")
-//                .get()
-//                .addOnCompleteListener(task -> {
-//                    if (task.isSuccessful()) {
-//                        // Loop through all the users
-//                        for (QueryDocumentSnapshot document : task.getResult()) {
-//                            // Check if the user email exist
-//                            if (document.getId().equals(email)) {
-//                                System.out.println("User email exist");
-//                                return;
-//                            } else {
-//                                // If user doesn't exist then create a new user
-//                                System.out.println("User email doesn't exist");
-//                            }
-//                        }
-//                    } else {
-//                        System.out.println("Error getting documents: " + task.getException());
-//                    }
-//                });
-//    }
-//
-//    public void createUser(String email) {
-//        db = FirebaseFirestore.getInstance();
-//        DocumentReference newUserRef = db.collection("Users").document(email);
-//
-//        // Adding user fields to the datastore
-//        Map<String, Object> newUserMap = new HashMap<>();
-//        newUserMap.put("Diet", "");
-//        newUserMap.put("Password", "");
-//        newUserMap.put("ProfileImage", "");
-//        newUserMap.put("Username", "");
-//
-//        newUserRef.set(newUserMap)
-//                .addOnSuccessListener(aVoid -> System.out.println("User successfully created!"))
-//                .addOnFailureListener(e -> System.out.println("Error creating user: " + e));
-//    }
+    public void CheckAndAddUser(String email) {
+        db = FirebaseFirestore.getInstance();
+        loginMethods.checkDbForEmail(email).thenAccept(userExists -> {
+            if (!userExists) {
+                Log.d(TAG, "User email doesn't exist");
+                loginMethods.createUser(email);
+            } else {
+                Log.d(TAG, "User email exists");
+            }
+        }).exceptionally(e -> {
+            Log.e(TAG, "Error checking user in database: " + e);
+            return null;
+        });
+    }
+
+    public void getRestaurantCardData() {
+        db = FirebaseFirestore.getInstance();
+        db.collection("Restaurants")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        List<DocumentSnapshot> documents = new ArrayList<>();
+                        for (DocumentSnapshot document : task.getResult()) {
+                            documents.add(document);
+                        }
+                        adapter = new RestaurantCardAdapter(getContext(), documents);
+
+                        adapter.setOnItemClickListener(new RestaurantCardAdapter.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(String rid) {
+                                Toast.makeText(requireContext(), "Item clicked: " + rid, Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+                        recyclerView.setAdapter(adapter);
+                    } else {
+                        Log.w(TAG, "Error getting documents: ", task.getException());
+                    }
+                })
+                .addOnFailureListener(e -> Log.w(TAG, "Error fetching documents", e));
+    }
 
     @Override
     public void onDestroyView() {
