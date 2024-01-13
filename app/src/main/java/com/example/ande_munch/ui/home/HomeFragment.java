@@ -7,6 +7,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -14,6 +16,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.ande_munch.CuisineButtonAdapter;
+import com.example.ande_munch.FilterActivity;
 import com.example.ande_munch.LoginPage;
 import com.example.ande_munch.R;
 import com.example.ande_munch.RestaurantCardAdapter;
@@ -26,7 +30,9 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class HomeFragment extends Fragment {
@@ -40,6 +46,10 @@ public class HomeFragment extends Fragment {
     private LoginMethods loginMethods = new LoginMethods();
     CollectionReference usersRef;
     private static final String TAG = "ExploreRestuarants";
+    private List<String> urls =
+            Arrays.asList("bbq","chinese","fast_food","hawker","indian","japanese","mexican","seafood","thai","western");
+    private List<String> cuisines =
+            Arrays.asList("BBQ","Chinese","Fast Food","Hawker","Indian","Japanese","Mexican","Seafood","Thai","Western");
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -65,20 +75,50 @@ public class HomeFragment extends Fragment {
                     for (DocumentSnapshot document : result.getDocuments()) {
                         Log.i(TAG,document.getId() + " => " + document.getData());
                     }
-                    RecyclerView recyclerView = root.findViewById(R.id.RestaurantCards);
 
-// Set the LayoutManager to LinearLayoutManager with horizontal orientation
+                    //Restuarant Card Layout
+                    RecyclerView recyclerView = root.findViewById(R.id.RestaurantCards);
                     LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
                     recyclerView.setLayoutManager(layoutManager);
-
-// Create and set the adapter
-                    RestaurantCardAdapter rcAdapter = new RestaurantCardAdapter(result.getDocuments());
+                    RestaurantCardAdapter rcAdapter = new RestaurantCardAdapter(requireContext(), result.getDocuments());
+                    rcAdapter.setOnItemClickListener(new RestaurantCardAdapter.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(String rid) {
+                            Toast.makeText(requireContext(), "Item clicked: " + rid, Toast.LENGTH_SHORT).show();
+                        }
+                    });
                     recyclerView.setAdapter(rcAdapter);
+
+                    //Cuisine Buttons Layout
+                    RecyclerView cuisineBtns = root.findViewById(R.id.cuisineBtns);
+                    LinearLayoutManager cuisineLayoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
+                    cuisineBtns.setLayoutManager(cuisineLayoutManager);
+                    CuisineButtonAdapter cbAdapter = new CuisineButtonAdapter(requireContext(),cuisines, urls);
+                    cbAdapter.setOnItemClickListener(new CuisineButtonAdapter.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(String cuisineName) {
+                            Toast.makeText(requireContext(), "Item clicked: " + cuisineName, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    cuisineBtns.setAdapter(cbAdapter);
+
 
                 })
                 .addOnFailureListener(exception -> {
                     Log.i(TAG, "Error getting documents." + exception);
+                })
+                .addOnFailureListener(result -> {
+                    Log.e(TAG,"Firestore trollin: "+ result);
                 });
+
+        ImageButton filterBtn = root.findViewById(R.id.filterButton);
+        filterBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(requireActivity(), FilterActivity.class);
+                startActivity(intent);
+            }
+        });
 
         return root;
     }
