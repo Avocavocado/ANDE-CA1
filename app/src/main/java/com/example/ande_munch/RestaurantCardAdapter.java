@@ -3,10 +3,12 @@ package com.example.ande_munch;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -17,6 +19,7 @@ public class RestaurantCardAdapter extends RecyclerView.Adapter<RestaurantCardAd
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView RestaurantName;
         private final TextView RestaurantDesc;
+        private final ImageView RestaurantImage;
 
         public ViewHolder(View view) {
             super(view);
@@ -24,6 +27,7 @@ public class RestaurantCardAdapter extends RecyclerView.Adapter<RestaurantCardAd
 
             RestaurantName = (TextView) view.findViewById(R.id.RestaurantName);
             RestaurantDesc = (TextView) view.findViewById(R.id.RestaurantDesc);
+            RestaurantImage = (ImageView) view.findViewById(R.id.RestaurantImage);
         }
 
         public TextView getName() {
@@ -33,6 +37,8 @@ public class RestaurantCardAdapter extends RecyclerView.Adapter<RestaurantCardAd
         public TextView getDesc() {
             return RestaurantDesc;
         }
+
+        public ImageView getImage() { return RestaurantImage; }
     }
 
     public RestaurantCardAdapter(List<DocumentSnapshot> dataSet) {
@@ -54,6 +60,7 @@ public class RestaurantCardAdapter extends RecyclerView.Adapter<RestaurantCardAd
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
         viewHolder.getName().setText(localDataSet.get(position).getId());
         viewHolder.getDesc().setText(localDataSet.get(position).getString("Desc"));
+        Picasso.get().load(localDataSet.get(position).getString("RestaurantImage")).into(viewHolder.getImage());
     }
 
     @Override
