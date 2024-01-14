@@ -105,6 +105,11 @@ public class RestaurantCardAdapter extends RecyclerView.Adapter<RestaurantCardAd
         }
     }
 
+    public void updateData(List<DocumentSnapshot> newDataSet) {
+        localDataSet = newDataSet;
+        notifyDataSetChanged();
+    }
+
     @Override
     public int getItemCount() {
         return localDataSet.size();

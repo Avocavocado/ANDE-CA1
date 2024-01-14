@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#FF00C7" /> <!-- Set the background color -->
+    <corners android:radius="50dp" /> <!-- Half of the height to create semi-circle ends -->
+    <size android:width="60dp" android:height="100dp" /> <!-- Adjust width and height as needed -->
+</shape>

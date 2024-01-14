@@ -28,7 +28,7 @@ public class CuisineButtonAdapter extends RecyclerView.Adapter<CuisineButtonAdap
     private static OnItemClickListener onItemClickListener;
 
     public interface OnItemClickListener {
-        void onItemClick(String cuisineName);
+        void onItemClick(String cuisineName, View v);
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -45,7 +45,7 @@ public class CuisineButtonAdapter extends RecyclerView.Adapter<CuisineButtonAdap
                 @Override
                 public void onClick(View v) {
                     if (onItemClickListener != null) {
-                        onItemClickListener.onItemClick(CuisineName.getText().toString());
+                        onItemClickListener.onItemClick(CuisineName.getText().toString(), v);
                     }
                 }
             });

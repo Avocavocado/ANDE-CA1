@@ -29,6 +29,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
@@ -38,8 +39,9 @@ public class HomeFragment extends Fragment {
     private FirebaseUser user = auth.getCurrentUser();
     private FirebaseFirestore db;
     private RecyclerView recyclerView;
+    private List<DocumentSnapshot> restaurants;
+    private List<String> selectedCuisines = new ArrayList<>();
     private RestaurantCardAdapter adapter;
-
     private LoginMethods loginMethods = new LoginMethods();
 
     private List<String> urls =
@@ -62,7 +64,31 @@ public class HomeFragment extends Fragment {
         recyclerView = binding.RestaurantCards;
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(layoutManager);
-        getRestaurantCardData();
+
+        restaurants = new ArrayList<>();
+        db = FirebaseFirestore.getInstance();
+        db.collection("Restaurants")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (DocumentSnapshot document : task.getResult()) {
+                            restaurants.add(document);
+                            Log.i(TAG, "Document: " + document);
+                        }
+                        // After data retrieval, set up the adapter
+                        adapter = new RestaurantCardAdapter(getContext(), restaurants);
+                        adapter.setOnItemClickListener(new RestaurantCardAdapter.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(String rid) {
+                                Toast.makeText(requireContext(), "Item clicked: " + rid, Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                        recyclerView.setAdapter(adapter);
+                    } else {
+                        Log.w(TAG, "Error getting documents: ", task.getException());
+                    }
+                })
+                .addOnFailureListener(e -> Log.w(TAG, "Error fetching documents", e));
 
         //Cuisine Buttons Layout
         RecyclerView cuisineBtns = root.findViewById(R.id.cuisineBtns);
@@ -71,8 +97,16 @@ public class HomeFragment extends Fragment {
         CuisineButtonAdapter cbAdapter = new CuisineButtonAdapter(requireContext(), cuisines, urls);
         cbAdapter.setOnItemClickListener(new CuisineButtonAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(String cuisineName) {
+            public void onItemClick(String cuisineName, View view) {
                 Toast.makeText(requireContext(), "Item clicked: " + cuisineName, Toast.LENGTH_SHORT).show();
+                if (selectedCuisines.contains(cuisineName)) {
+                    selectedCuisines.remove(cuisineName);
+                    view.setBackgroundResource(R.drawable.cuisine_button_bg);
+                } else {
+                    selectedCuisines.add(cuisineName);
+                    view.setBackgroundResource(R.drawable.selected_cuisine_button_bg);
+                }
+                adapter.updateData(filterDocuments(selectedCuisines));
             }
         });
         cuisineBtns.setAdapter(cbAdapter);
@@ -104,31 +138,23 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    public void getRestaurantCardData() {
-        db = FirebaseFirestore.getInstance();
-        db.collection("Restaurants")
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        List<DocumentSnapshot> documents = new ArrayList<>();
-                        for (DocumentSnapshot document : task.getResult()) {
-                            documents.add(document);
-                        }
-                        adapter = new RestaurantCardAdapter(getContext(), documents);
+    public List<DocumentSnapshot> filterDocuments(List<String> selectedCuisines) {
+        List<DocumentSnapshot> filteredDocuments = new ArrayList<>();
 
-                        adapter.setOnItemClickListener(new RestaurantCardAdapter.OnItemClickListener() {
-                            @Override
-                            public void onItemClick(String rid) {
-                                Toast.makeText(requireContext(), "Item clicked: " + rid, Toast.LENGTH_SHORT).show();
-                            }
-                        });
+        if (selectedCuisines.size() == 0) {
+            return restaurants;
+        }
 
-                        recyclerView.setAdapter(adapter);
-                    } else {
-                        Log.w(TAG, "Error getting documents: ", task.getException());
-                    }
-                })
-                .addOnFailureListener(e -> Log.w(TAG, "Error fetching documents", e));
+        for (DocumentSnapshot document : restaurants) {
+            for (String cuisine: (List<String>) document.get("Cuisine")) {
+                if (selectedCuisines.contains(cuisine)) {
+                    filteredDocuments.add(document);
+                    break;
+                }
+            }
+        }
+        Log.i(TAG,"SELECTED :" + selectedCuisines + " Documents No: " + filteredDocuments.size() + " Res. No: " + restaurants.size());
+        return filteredDocuments;
     }
 
     @Override
