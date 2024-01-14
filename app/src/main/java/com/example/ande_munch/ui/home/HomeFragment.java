@@ -2,10 +2,13 @@ package com.example.ande_munch.ui.home;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -31,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 public class HomeFragment extends Fragment {
     private static final String TAG = "ExploreRestaurants";
@@ -42,6 +46,8 @@ public class HomeFragment extends Fragment {
     private List<DocumentSnapshot> restaurants;
     private List<String> selectedCuisines = new ArrayList<>();
     private RestaurantCardAdapter adapter;
+    private EditText searchText;
+    private String searchString;
     private LoginMethods loginMethods = new LoginMethods();
 
     private List<String> urls =
@@ -59,6 +65,21 @@ public class HomeFragment extends Fragment {
         String email = loginMethods.getUserEmail();
         Log.d(TAG, "Email: " + email);
         CheckAndAddUser(email);
+
+        searchText = (EditText) root.findViewById(R.id.searchText);
+        searchText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                searchString = editable.toString();
+                adapter.updateData(filterDocuments(selectedCuisines, searchString));
+                Log.i(TAG,"Text changed: " + searchString);
+            }
+        });
 
         // Initialize RecyclerView and Adapter
         recyclerView = binding.RestaurantCards;
@@ -106,7 +127,7 @@ public class HomeFragment extends Fragment {
                     selectedCuisines.add(cuisineName);
                     view.setBackgroundResource(R.drawable.selected_cuisine_button_bg);
                 }
-                adapter.updateData(filterDocuments(selectedCuisines));
+                adapter.updateData(filterDocuments(selectedCuisines, searchText.getText().toString()));
             }
         });
         cuisineBtns.setAdapter(cbAdapter);
@@ -138,13 +159,36 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    public List<DocumentSnapshot> filterDocuments(List<String> selectedCuisines) {
-        List<DocumentSnapshot> filteredDocuments = new ArrayList<>();
+    public List<DocumentSnapshot> filterDocuments(List<String> selectedCuisines, String searchString) {
+        List<DocumentSnapshot> filteredDocuments = restaurants;
 
-        if (selectedCuisines.size() == 0) {
+        if (selectedCuisines.size() == 0 && searchString.length() == 0) {
             return restaurants;
         }
+        if (searchString.length() > 0) {
+            filteredDocuments = filterByName(filteredDocuments);
+        }
+        if (selectedCuisines.size() > 0) {
+            filteredDocuments = filterByCuisine(filteredDocuments);
+        }
+        Log.i(TAG,"SELECTED :" + selectedCuisines + " Documents No: " + filteredDocuments.size() + " Res. No: " + restaurants.size());
+        return filteredDocuments;
+    }
 
+    public List<DocumentSnapshot> filterByName(List<DocumentSnapshot> restaurants) {
+        List<DocumentSnapshot> filteredDocuments = new ArrayList<>();
+        for (DocumentSnapshot document : restaurants) {
+            String rName = document.getId().toLowerCase();
+            String search = searchString.trim().replaceAll("\\s+", " ").toLowerCase();
+            if (rName.contains(search)) {
+                filteredDocuments.add(document);
+            }
+        }
+        return filteredDocuments;
+    }
+
+    public List<DocumentSnapshot> filterByCuisine(List<DocumentSnapshot> restaurants) {
+        List<DocumentSnapshot> filteredDocuments = new ArrayList<>();
         for (DocumentSnapshot document : restaurants) {
             for (String cuisine: (List<String>) document.get("Cuisine")) {
                 if (selectedCuisines.contains(cuisine)) {
@@ -153,7 +197,6 @@ public class HomeFragment extends Fragment {
                 }
             }
         }
-        Log.i(TAG,"SELECTED :" + selectedCuisines + " Documents No: " + filteredDocuments.size() + " Res. No: " + restaurants.size());
         return filteredDocuments;
     }
 
