@@ -1,5 +1,8 @@
 package com.example.ande_munch.ui.home;
 
+import static android.content.Context.MODE_PRIVATE;
+
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -12,6 +15,8 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -32,9 +37,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 
 public class HomeFragment extends Fragment {
     private static final String TAG = "ExploreRestaurants";
@@ -49,7 +52,6 @@ public class HomeFragment extends Fragment {
     private EditText searchText;
     private String searchString;
     private LoginMethods loginMethods = new LoginMethods();
-
     private List<String> urls =
             Arrays.asList("bbq", "chinese", "fast_food", "hawker", "indian", "japanese", "mexican", "seafood", "thai", "western");
     private List<String> cuisines =
@@ -137,7 +139,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(requireActivity(), FilterActivity.class);
-                startActivity(intent);
+                getFilters.launch(intent);
             }
         });
 
@@ -199,6 +201,19 @@ public class HomeFragment extends Fragment {
         }
         return filteredDocuments;
     }
+
+    private final ActivityResultLauncher<Intent> getFilters = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    Intent data = result.getData();
+                    String price = data.getStringExtra("Price");
+                    String rating = data.getStringExtra("Rating");
+                    int distance = data.getIntExtra("Distance", 0);
+                    Log.i(TAG, "Extra data received: " + price + " " + rating + " " + distance);
+                }
+            }
+    );
 
     @Override
     public void onDestroyView() {
