@@ -97,6 +97,4 @@ public class LoginMethods {
                 .addOnSuccessListener(aVoid -> System.out.println("User successfully created!"))
                 .addOnFailureListener(e -> System.out.println("Error creating user: " + e));
     }
-
-
 }

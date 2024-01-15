@@ -1,16 +1,21 @@
 package com.example.ande_munch.ui.dashboard;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import java.util.Map;
@@ -19,8 +24,15 @@ import java.util.HashMap;
 
 import com.example.ande_munch.CreateParty;
 import com.example.ande_munch.JoinParty;
+import com.example.ande_munch.LoginPage;
+import com.example.ande_munch.ProfilePage;
+import com.example.ande_munch.R;
 import com.example.ande_munch.databinding.FragmentDashboardBinding;
+import com.example.ande_munch.methods.LoginMethods;
+import com.example.ande_munch.methods.PartyMethods;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -30,6 +42,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.example.ande_munch.DialogCallback;
+
 public class DashboardFragment extends Fragment {
 
     private FragmentDashboardBinding binding;
@@ -38,6 +53,8 @@ public class DashboardFragment extends Fragment {
     FirebaseAuth mauth = FirebaseAuth.getInstance();
     FirebaseUser currentUser = mauth.getCurrentUser();
     FirebaseFirestore db;
+    LoginMethods loginMethods = new LoginMethods();
+    PartyMethods partyMethods = new PartyMethods();
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         DashboardViewModel dashboardViewModel = new ViewModelProvider(this).get(DashboardViewModel.class);
@@ -46,7 +63,33 @@ public class DashboardFragment extends Fragment {
         View root = binding.getRoot();
 
         binding.createPartyBtn.setOnClickListener(view -> navigateToCreatePartyPage());
-        binding.joinPartyBtn.setOnClickListener(view -> navigateToJoinPartyPage());
+        binding.ProfileBtn.setOnClickListener(view -> navigateToProfilePage());
+
+        DialogCallback dialogCallback = new DialogCallback() {
+            @Override
+            public void onDialogResult(String dialogCode) {
+                // Handle the dialog code here
+                System.out.println("The dialog code is: " + dialogCode);
+
+                partyMethods.checkPartyCode(getContext(), dialogCode, partyCodeExists -> {
+                    // Check if the party code exists and handle it
+                    if (partyCodeExists) {
+                        // Party code exists
+                        System.out.println("Party found!");
+                    } else {
+                        // Party code does not exist
+                        System.out.println("Party not found.");
+                    }
+                }, e -> {
+                    // Handle the failure, e.g., show an error message
+                    System.out.println("Error: " + e.getMessage());
+                });
+            }
+        };
+
+        binding.joinPartyBtn.setOnClickListener(view -> {
+            showJoinPartyDialog(dialogCallback);
+        });
 
         // final TextView textView = binding.textDashboard;
         // dashboardViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
@@ -69,6 +112,11 @@ public class DashboardFragment extends Fragment {
     private void navigateToJoinPartyPage() {
         Intent joinPartyIntent = new Intent(getActivity(), JoinParty.class);
         startActivity(joinPartyIntent);
+    }
+
+    public void navigateToProfilePage() {
+        Intent intent = new Intent(getActivity(), ProfilePage.class);
+        startActivity(intent);
     }
 
     public void initCreateParty() {
@@ -177,6 +225,127 @@ public class DashboardFragment extends Fragment {
         System.out.println("The party code is: " + partyCode);
 
         return partyCode;
+    }
+
+    private void showJoinPartyDialog(DialogCallback callback) {
+        // Inflate the custom dialog layout
+        View customView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_layout, null);
+
+        // Create the Material Component Dialog
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireContext())
+                .setView(customView)
+                .setPositiveButton("Join", null) // We'll handle this in a custom way
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Handle the negative button action or dismiss the dialog
+                        dialog.dismiss();
+                    }
+                });
+
+        final EditText editText1 = customView.findViewById(R.id.editText1);
+        final EditText editText2 = customView.findViewById(R.id.editText2);
+        final EditText editText3 = customView.findViewById(R.id.editText3);
+        final EditText editText4 = customView.findViewById(R.id.editText4);
+
+        // Set a TextWatcher for each EditText
+        editText1.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() == 1) {
+                    editText2.requestFocus();
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
+        editText2.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() == 1) {
+                    editText3.requestFocus();
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
+        editText3.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() == 1) {
+                    editText4.requestFocus();
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
+        // Set a TextWatcher for editText4 to disable further input if it contains one character
+        editText4.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length() == 1) {
+                    editText4.setEnabled(false);
+                }
+            }
+        });
+
+        // Handle the positive button click here
+        builder.setPositiveButton("Join", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Handle the positive button action
+                // You can access the entered characters from the EditText widgets here
+                String input1 = editText1.getText().toString();
+                String input2 = editText2.getText().toString();
+                String input3 = editText3.getText().toString();
+                String input4 = editText4.getText().toString();
+
+                // Concatenate the inputs into a string
+                String dialogCode = input1 + input2 + input3 + input4;
+
+                // Dismiss the dialog
+                dialog.dismiss();
+
+                // Call the callback with the concatenated string
+                callback.onDialogResult(dialogCode);
+            }
+        });
+
+        // Show the dialog
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        // Request focus on the first EditText initially
+        editText1.requestFocus();
     }
 
     @Override

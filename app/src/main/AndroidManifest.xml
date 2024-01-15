@@ -47,13 +47,13 @@
         <activity
             android:name=".CreateParty"
             android:exported="true"
-            android:label="Login Page">
+            android:label="CreateParty Page">
         </activity>
 
         <activity
             android:name=".JoinParty"
             android:exported="true"
-            android:label="Login Page">
+            android:label="JoinParty Page">
         </activity>
 
         <activity
@@ -73,6 +73,11 @@
             android:exported="true"
             android:label="Login Page">
         </activity>
-    </application>
 
+        <activity
+            android:name=".ProfilePage"
+            android:exported="true"
+            android:label="Profile Page">
+        </activity>
+    </application>
 </manifest>
