@@ -17,7 +17,7 @@ import java.util.List;
 
 public class RestaurantCardAdapter extends RecyclerView.Adapter<RestaurantCardAdapter.ViewHolder> {
 
-    private List<DocumentSnapshot> localDataSet;
+    private List<Restaurant> localDataSet;
     private Context context;
     private static RestaurantCardAdapter.OnItemClickListener onItemClickListener;
 
@@ -60,7 +60,7 @@ public class RestaurantCardAdapter extends RecyclerView.Adapter<RestaurantCardAd
         public LinearLayout getCuisines() { return Cuisines; }
     }
 
-    public RestaurantCardAdapter(Context context, List<DocumentSnapshot> dataSet) {
+    public RestaurantCardAdapter(Context context, List<Restaurant> dataSet) {
         this.context = context;
         localDataSet = dataSet;
     }
@@ -82,11 +82,12 @@ public class RestaurantCardAdapter extends RecyclerView.Adapter<RestaurantCardAd
     // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
-        viewHolder.getName().setText(localDataSet.get(position).getId());
-        viewHolder.getDesc().setText(localDataSet.get(position).getString("Desc"));
-        Picasso.get().load(localDataSet.get(position).getString("RestaurantImage")).into(viewHolder.getImage());
+        Restaurant item = localDataSet.get(position);
+        viewHolder.getName().setText(item.data.getId() + "(" + item.avgPrice + ")");
+        viewHolder.getDesc().setText(item.data.getString("Desc"));
+        Picasso.get().load(item.data.getString("RestaurantImage")).into(viewHolder.getImage());
         viewHolder.getCuisines().removeAllViews();
-        for (String cuisine: (List<String>) localDataSet.get(position).get("Cuisine")) {
+        for (String cuisine: (List<String>) item.data.get("Cuisine")) {
             TextView textView = new TextView(context);
             textView.setText(cuisine);
 
@@ -105,7 +106,7 @@ public class RestaurantCardAdapter extends RecyclerView.Adapter<RestaurantCardAd
         }
     }
 
-    public void updateData(List<DocumentSnapshot> newDataSet) {
+    public void updateData(List<Restaurant> newDataSet) {
         localDataSet = newDataSet;
         notifyDataSetChanged();
     }

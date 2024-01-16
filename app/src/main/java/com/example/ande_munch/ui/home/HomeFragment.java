@@ -1,7 +1,5 @@
 package com.example.ande_munch.ui.home;
 
-import static android.content.Context.MODE_PRIVATE;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,7 +7,6 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -26,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.ande_munch.CuisineButtonAdapter;
 import com.example.ande_munch.FilterActivity;
 import com.example.ande_munch.R;
+import com.example.ande_munch.Restaurant;
 import com.example.ande_munch.RestaurantCardAdapter;
 import com.example.ande_munch.databinding.ExploreRestaurantsBinding;
 import com.example.ande_munch.methods.LoginMethods;
@@ -35,10 +33,10 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -50,11 +48,11 @@ public class HomeFragment extends Fragment {
     private FirebaseUser user = auth.getCurrentUser();
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private RecyclerView recyclerView;
-    private List<DocumentSnapshot> restaurants;
+    private List<Restaurant> restaurants = new ArrayList<Restaurant>();;
     private List<String> selectedCuisines = new ArrayList<>();
-    private RestaurantCardAdapter adapter;
+    private RestaurantCardAdapter rcAdapter;
     private EditText searchText;
-    private String searchString;
+    private String searchString = "";
     private String priceFilter = "Any";
     private String ratingFilter = "Any";
     private int distanceFilter = 0;
@@ -88,7 +86,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void afterTextChanged(Editable editable) {
                 searchString = editable.toString();
-                adapter.updateData(filterRestaurants());
+                rcAdapter.updateData(filterRestaurants());
                 //Log.i(TAG,"Text changed: " + searchString);
             }
         });
@@ -98,55 +96,39 @@ public class HomeFragment extends Fragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(layoutManager);
 
-        restaurants = new ArrayList<>();
+        restaurants = new ArrayList<Restaurant>();
         db.collection("Restaurants")
                 .get()
                 .addOnCompleteListener(getRestaurantsTask -> {
-                    if (getRestaurantsTask.isSuccessful()) {
-                        for (DocumentSnapshot document : getRestaurantsTask.getResult()) {
-                            DocumentReference restaurantReference = document.getReference();
-                            restaurantReference.collection("Menu")
-                                    .get()
-                                    .addOnCompleteListener(getMenuTask -> {
-                                        if (getMenuTask.isSuccessful()) {
-                                            double totalPrice = 0;
-                                            double dishCount = 0;
-                                            for (DocumentSnapshot dish : getMenuTask.getResult()) {
-                                                totalPrice += dish.getLong("Price");
-                                                dishCount++;
-                                            }
-                                            document.getData().put("avgPrice", new DecimalFormat("#.##").format(totalPrice/dishCount));
+                            if (getRestaurantsTask.isSuccessful()) {
+                                for (DocumentSnapshot document : getRestaurantsTask.getResult()) {
+                                    DocumentReference restaurantReference = document.getReference();
+                                    CollectionReference menu = restaurantReference.collection("Menu");
+                                    CollectionReference reviews = restaurantReference.collection("Reviews");
+
+                                    Callback callback = new Callback() {
+                                        @Override
+                                        public void onSuccess(double avgPrice, double avgRating) {
+                                            restaurants.add(new Restaurant(document, avgPrice, avgRating));
+                                            rcAdapter.notifyItemInserted(restaurants.size() - 1);
                                         }
-                                    });
-                            restaurantReference.collection("Reviews")
-                                    .get()
-                                    .addOnCompleteListener(getReviewsTask -> {
-                                        if (getReviewsTask.isSuccessful()) {
-                                            double totalScore = 0;
-                                            double reviewCount = 0;
-                                            for (DocumentSnapshot review : getReviewsTask.getResult()) {
-                                                totalScore += review.getLong("Rating");
-                                                reviewCount++;
-                                            }
-                                            document.getData().put("avgRating", Math.round(totalScore / reviewCount * 2.0) / 2.0);
-                                        }
-                                    });
-                            restaurants.add(document);
-                            Log.i(TAG, "Document: " + document + " " + document.getDouble("avgPrice") + " " + document.getDouble("avgRating"));
-                        }
-                        // After data retrieval, set up the adapter
-                        adapter = new RestaurantCardAdapter(getContext(), restaurants);
-                        adapter.setOnItemClickListener(new RestaurantCardAdapter.OnItemClickListener() {
-                            @Override
-                            public void onItemClick(String rid) {
-                                Toast.makeText(requireContext(), "Item clicked: " + rid, Toast.LENGTH_SHORT).show();
+                                    };
+
+                                    getMenuAndReviewData1(menu, reviews, callback);
+                                }
+                                rcAdapter = new RestaurantCardAdapter(getContext(), restaurants);
+                                rcAdapter.setOnItemClickListener(new RestaurantCardAdapter.OnItemClickListener() {
+                                    @Override
+                                    public void onItemClick(String rid) {
+                                        Toast.makeText(requireContext(), "Item clicked: " + rid, Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                                RecyclerView resCards = root.findViewById(R.id.RestaurantCards);
+                                LinearLayoutManager rcLayoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
+                                resCards.setLayoutManager(rcLayoutManager);
+                                resCards.setAdapter(rcAdapter);
                             }
-                        });
-                        recyclerView.setAdapter(adapter);
-                    } else {
-                        Log.w(TAG, "Error getting documents: ", getRestaurantsTask.getException());
-                    }
-                })
+                        })
                 .addOnFailureListener(e -> Log.w(TAG, "Error fetching documents", e));
 
         //Cuisine Buttons Layout
@@ -165,7 +147,7 @@ public class HomeFragment extends Fragment {
                     selectedCuisines.add(cuisineName);
                     view.setBackgroundResource(R.drawable.selected_cuisine_button_bg);
                 }
-                adapter.updateData(filterRestaurants());
+                rcAdapter.updateData(filterRestaurants());
             }
         });
         cuisineBtns.setAdapter(cbAdapter);
@@ -197,11 +179,11 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    public List<DocumentSnapshot> filterRestaurants() {
-        List<DocumentSnapshot> filteredDocuments = restaurants;
+    public List<Restaurant> filterRestaurants() {
+        List<Restaurant> filteredDocuments = restaurants;
 
         //NO FILTERS
-        if (selectedCuisines.size() == 0 && searchString.length() == 0 && priceFilter == "Any" && ratingFilter == "Any" && distanceFilter == 0) {
+        if (selectedCuisines.size() == 0 && searchString.length() == 0 && priceFilter.equals("Any") && ratingFilter.equals("Any") && distanceFilter == 0) {
             return restaurants;
         }
 
@@ -216,12 +198,12 @@ public class HomeFragment extends Fragment {
         }
 
         //PRICE FILTER
-        if (priceFilter != "Any") {
+        if (!priceFilter.equals("Any")) {
 
         }
 
         //RATING FILTER
-        if (ratingFilter != "Any") {
+        if (!ratingFilter.equals("Any")) {
 
         }
 
@@ -233,10 +215,10 @@ public class HomeFragment extends Fragment {
         return filteredDocuments;
     }
 
-    public List<DocumentSnapshot> filterByName(List<DocumentSnapshot> restaurants) {
-        List<DocumentSnapshot> filteredDocuments = new ArrayList<>();
-        for (DocumentSnapshot document : restaurants) {
-            String rName = document.getId().toLowerCase();
+    public List<Restaurant> filterByName(List<Restaurant> restaurants) {
+        List<Restaurant> filteredDocuments = new ArrayList<>();
+        for (Restaurant document : restaurants) {
+            String rName = document.data.getId().toLowerCase();
             String search = searchString.trim().replaceAll("\\s+", " ").toLowerCase();
             if (rName.contains(search)) {
                 filteredDocuments.add(document);
@@ -245,10 +227,10 @@ public class HomeFragment extends Fragment {
         return filteredDocuments;
     }
 
-    public List<DocumentSnapshot> filterByCuisine(List<DocumentSnapshot> restaurants) {
-        List<DocumentSnapshot> filteredDocuments = new ArrayList<>();
-        for (DocumentSnapshot document : restaurants) {
-            for (String cuisine : (List<String>) document.get("Cuisine")) {
+    public List<Restaurant> filterByCuisine(List<Restaurant> restaurants) {
+        List<Restaurant> filteredDocuments = new ArrayList<>();
+        for (Restaurant document : restaurants) {
+            for (String cuisine : (List<String>) document.data.get("Cuisine")) {
                 if (selectedCuisines.contains(cuisine)) {
                     filteredDocuments.add(document);
                     break;
@@ -270,6 +252,51 @@ public class HomeFragment extends Fragment {
                 }
             }
     );
+
+    public void getMenuAndReviewData1(CollectionReference menu, CollectionReference reviews, Callback callback) {
+        menu.get().addOnCompleteListener(menuSnapshot -> {
+            double totalPrice = 0;
+            double dishCount = 0;
+
+            for (QueryDocumentSnapshot dish : menuSnapshot.getResult()) {
+                try {
+                    //Log.i(TAG, "DISH: " + dish.get("Price"));
+                    totalPrice += dish.getLong("Price").doubleValue();
+                    dishCount++;
+                } catch (Exception e) {
+                    Log.i(TAG, dish.getId());
+                }
+            }
+
+            double avgPrice = Math.round(totalPrice / dishCount * 100) / 100.0;
+            //Log.i(TAG, "getAvgPrice() worked");
+            getMenuAndReviewData2(reviews, avgPrice, callback);
+        });
+    }
+
+    public void getMenuAndReviewData2(CollectionReference reviews, double avgPrice, Callback callback) {
+        reviews.get().addOnCompleteListener(reviewsSnapshot -> {
+            double totalScore = 0;
+            double reviewCount = 0;
+            for (QueryDocumentSnapshot review : reviewsSnapshot.getResult()) {
+                try {
+                    //Log.i(TAG, "RATING :" + review.get("Rating"));
+                    totalScore += review.getLong("Rating").doubleValue();
+                } catch (Exception e) {
+                    Log.i(TAG, "RATING : [NO REVIEWS]");
+                    totalScore = 0;
+                    break;
+                }
+                reviewCount++;
+            }
+            double avgRating = Math.round(totalScore / reviewCount * 2) / 2.0;
+            callback.onSuccess(avgPrice, avgRating);
+        });
+    }
+
+    public interface Callback {
+        void onSuccess(double result1, double result2);
+    }
 
     @Override
     public void onDestroyView() {
