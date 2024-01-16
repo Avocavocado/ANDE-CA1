@@ -83,7 +83,7 @@ public class RestaurantCardAdapter extends RecyclerView.Adapter<RestaurantCardAd
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
         Restaurant item = localDataSet.get(position);
-        viewHolder.getName().setText(item.data.getId() + "(" + item.avgPrice + ")");
+        viewHolder.getName().setText(item.data.getId() + "[PRICE: " + item.avgPrice + ", RATING: " + item.avgRating + "]");
         viewHolder.getDesc().setText(item.data.getString("Desc"));
         Picasso.get().load(item.data.getString("RestaurantImage")).into(viewHolder.getImage());
         viewHolder.getCuisines().removeAllViews();

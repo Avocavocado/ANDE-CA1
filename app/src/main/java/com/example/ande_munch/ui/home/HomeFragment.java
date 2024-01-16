@@ -199,12 +199,12 @@ public class HomeFragment extends Fragment {
 
         //PRICE FILTER
         if (!priceFilter.equals("Any")) {
-
+            filteredDocuments = filterByPrice(filteredDocuments);
         }
 
         //RATING FILTER
         if (!ratingFilter.equals("Any")) {
-
+            filteredDocuments = filterByRating(filteredDocuments);
         }
 
         //DISTANCE FILTER
@@ -240,6 +240,28 @@ public class HomeFragment extends Fragment {
         return filteredDocuments;
     }
 
+    public List<Restaurant> filterByRating(List<Restaurant> restaurants) {
+        List<Restaurant> filteredDocuments = new ArrayList<>();
+        for (Restaurant document : restaurants) {
+            double ratingValue = Double.parseDouble(ratingFilter.substring(0, ratingFilter.length() - 1));
+            if (document.avgRating >= ratingValue) {
+                filteredDocuments.add(document);
+            }
+        }
+        return filteredDocuments;
+    }
+
+    public List<Restaurant> filterByPrice(List<Restaurant> restaurants) {
+        List<Restaurant> filteredDocuments = new ArrayList<>();
+        for (Restaurant document : restaurants) {
+            int priceValue = Integer.parseInt(priceFilter.substring(1));
+            if (document.avgPrice <= priceValue) {
+                filteredDocuments.add(document);
+            }
+        }
+        return filteredDocuments;
+    }
+
     private final ActivityResultLauncher<Intent> getFilters = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -249,6 +271,7 @@ public class HomeFragment extends Fragment {
                     ratingFilter = data.getStringExtra("Rating");
                     distanceFilter = data.getIntExtra("Distance", 0);
                     Log.i(TAG, "FILTERS RECEIVED: " + priceFilter + " " + ratingFilter + " " + distanceFilter);
+                    rcAdapter.updateData(filterRestaurants());
                 }
             }
     );
@@ -283,7 +306,7 @@ public class HomeFragment extends Fragment {
                     //Log.i(TAG, "RATING :" + review.get("Rating"));
                     totalScore += review.getLong("Rating").doubleValue();
                 } catch (Exception e) {
-                    Log.i(TAG, "RATING : [NO REVIEWS]");
+                    //Log.i(TAG, "RATING : [NO REVIEWS]");
                     totalScore = 0;
                     break;
                 }
