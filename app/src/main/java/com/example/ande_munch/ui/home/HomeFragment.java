@@ -9,6 +9,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -30,11 +31,14 @@ import com.example.ande_munch.databinding.ExploreRestaurantsBinding;
 import com.example.ande_munch.methods.LoginMethods;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -44,13 +48,16 @@ public class HomeFragment extends Fragment {
     private @NonNull ExploreRestaurantsBinding binding;
     private FirebaseAuth auth = FirebaseAuth.getInstance();
     private FirebaseUser user = auth.getCurrentUser();
-    private FirebaseFirestore db;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private RecyclerView recyclerView;
     private List<DocumentSnapshot> restaurants;
     private List<String> selectedCuisines = new ArrayList<>();
     private RestaurantCardAdapter adapter;
     private EditText searchText;
     private String searchString;
+    private String priceFilter = "Any";
+    private String ratingFilter = "Any";
+    private int distanceFilter = 0;
     private LoginMethods loginMethods = new LoginMethods();
     private List<String> urls =
             Arrays.asList("bbq", "chinese", "fast_food", "hawker", "indian", "japanese", "mexican", "seafood", "thai", "western");
@@ -71,15 +78,18 @@ public class HomeFragment extends Fragment {
         searchText = (EditText) root.findViewById(R.id.searchText);
         searchText.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
 
             @Override
             public void afterTextChanged(Editable editable) {
                 searchString = editable.toString();
-                adapter.updateData(filterDocuments(selectedCuisines, searchString));
-                Log.i(TAG,"Text changed: " + searchString);
+                adapter.updateData(filterRestaurants());
+                //Log.i(TAG,"Text changed: " + searchString);
             }
         });
 
@@ -89,14 +99,40 @@ public class HomeFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
 
         restaurants = new ArrayList<>();
-        db = FirebaseFirestore.getInstance();
         db.collection("Restaurants")
                 .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        for (DocumentSnapshot document : task.getResult()) {
+                .addOnCompleteListener(getRestaurantsTask -> {
+                    if (getRestaurantsTask.isSuccessful()) {
+                        for (DocumentSnapshot document : getRestaurantsTask.getResult()) {
+                            DocumentReference restaurantReference = document.getReference();
+                            restaurantReference.collection("Menu")
+                                    .get()
+                                    .addOnCompleteListener(getMenuTask -> {
+                                        if (getMenuTask.isSuccessful()) {
+                                            double totalPrice = 0;
+                                            double dishCount = 0;
+                                            for (DocumentSnapshot dish : getMenuTask.getResult()) {
+                                                totalPrice += dish.getLong("Price");
+                                                dishCount++;
+                                            }
+                                            document.getData().put("avgPrice", new DecimalFormat("#.##").format(totalPrice/dishCount));
+                                        }
+                                    });
+                            restaurantReference.collection("Reviews")
+                                    .get()
+                                    .addOnCompleteListener(getReviewsTask -> {
+                                        if (getReviewsTask.isSuccessful()) {
+                                            double totalScore = 0;
+                                            double reviewCount = 0;
+                                            for (DocumentSnapshot review : getReviewsTask.getResult()) {
+                                                totalScore += review.getLong("Rating");
+                                                reviewCount++;
+                                            }
+                                            document.getData().put("avgRating", Math.round(totalScore / reviewCount * 2.0) / 2.0);
+                                        }
+                                    });
                             restaurants.add(document);
-                            Log.i(TAG, "Document: " + document);
+                            Log.i(TAG, "Document: " + document + " " + document.getDouble("avgPrice") + " " + document.getDouble("avgRating"));
                         }
                         // After data retrieval, set up the adapter
                         adapter = new RestaurantCardAdapter(getContext(), restaurants);
@@ -108,7 +144,7 @@ public class HomeFragment extends Fragment {
                         });
                         recyclerView.setAdapter(adapter);
                     } else {
-                        Log.w(TAG, "Error getting documents: ", task.getException());
+                        Log.w(TAG, "Error getting documents: ", getRestaurantsTask.getException());
                     }
                 })
                 .addOnFailureListener(e -> Log.w(TAG, "Error fetching documents", e));
@@ -129,7 +165,7 @@ public class HomeFragment extends Fragment {
                     selectedCuisines.add(cuisineName);
                     view.setBackgroundResource(R.drawable.selected_cuisine_button_bg);
                 }
-                adapter.updateData(filterDocuments(selectedCuisines, searchText.getText().toString()));
+                adapter.updateData(filterRestaurants());
             }
         });
         cuisineBtns.setAdapter(cbAdapter);
@@ -161,19 +197,39 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    public List<DocumentSnapshot> filterDocuments(List<String> selectedCuisines, String searchString) {
+    public List<DocumentSnapshot> filterRestaurants() {
         List<DocumentSnapshot> filteredDocuments = restaurants;
 
-        if (selectedCuisines.size() == 0 && searchString.length() == 0) {
+        //NO FILTERS
+        if (selectedCuisines.size() == 0 && searchString.length() == 0 && priceFilter == "Any" && ratingFilter == "Any" && distanceFilter == 0) {
             return restaurants;
         }
+
+        //NAME FILTER
         if (searchString.length() > 0) {
             filteredDocuments = filterByName(filteredDocuments);
         }
+
+        //CUISINE FILTER
         if (selectedCuisines.size() > 0) {
             filteredDocuments = filterByCuisine(filteredDocuments);
         }
-        Log.i(TAG,"SELECTED :" + selectedCuisines + " Documents No: " + filteredDocuments.size() + " Res. No: " + restaurants.size());
+
+        //PRICE FILTER
+        if (priceFilter != "Any") {
+
+        }
+
+        //RATING FILTER
+        if (ratingFilter != "Any") {
+
+        }
+
+        //DISTANCE FILTER
+        if (distanceFilter != 0) {
+
+        }
+        Log.i(TAG, "SELECTED :" + selectedCuisines + " Documents No: " + filteredDocuments.size() + " Res. No: " + restaurants.size());
         return filteredDocuments;
     }
 
@@ -192,7 +248,7 @@ public class HomeFragment extends Fragment {
     public List<DocumentSnapshot> filterByCuisine(List<DocumentSnapshot> restaurants) {
         List<DocumentSnapshot> filteredDocuments = new ArrayList<>();
         for (DocumentSnapshot document : restaurants) {
-            for (String cuisine: (List<String>) document.get("Cuisine")) {
+            for (String cuisine : (List<String>) document.get("Cuisine")) {
                 if (selectedCuisines.contains(cuisine)) {
                     filteredDocuments.add(document);
                     break;
@@ -207,10 +263,10 @@ public class HomeFragment extends Fragment {
             result -> {
                 if (result.getResultCode() == Activity.RESULT_OK) {
                     Intent data = result.getData();
-                    String price = data.getStringExtra("Price");
-                    String rating = data.getStringExtra("Rating");
-                    int distance = data.getIntExtra("Distance", 0);
-                    Log.i(TAG, "Extra data received: " + price + " " + rating + " " + distance);
+                    priceFilter = data.getStringExtra("Price");
+                    ratingFilter = data.getStringExtra("Rating");
+                    distanceFilter = data.getIntExtra("Distance", 0);
+                    Log.i(TAG, "FILTERS RECEIVED: " + priceFilter + " " + ratingFilter + " " + distanceFilter);
                 }
             }
     );
