@@ -39,14 +39,19 @@ public class LoginPage extends AppCompatActivity {
     FirebaseAuth auth = FirebaseAuth.getInstance();
     FirebaseUser user = auth.getCurrentUser();
 
-    EditText editTextEmailPhone = findViewById(R.id.emailEditText);
-    EditText editTextPassword = findViewById(R.id.passwordEditText);
-    Button buttonLogin = findViewById(R.id.loginButton);
+    EditText editTextEmailPhone;
+    EditText editTextPassword;
+    Button buttonLogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_page);
+
+        // Initialize your UI elements here
+        editTextEmailPhone = findViewById(R.id.emailEditText);
+        editTextPassword = findViewById(R.id.passwordEditText);
+        buttonLogin = findViewById(R.id.loginButton);
 
         FirebaseApp.initializeApp(this);
         fAuth = FirebaseAuth.getInstance();
