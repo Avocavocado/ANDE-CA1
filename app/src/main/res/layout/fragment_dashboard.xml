@@ -7,33 +7,41 @@
     android:background="@color/bgColor"
     tools:context=".ui.dashboard.DashboardFragment">
 
-    <!-- TextView -->
+    <!-- Profile Icon -->
+    <Button
+        android:id="@+id/ProfileBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="20dp"
+        android:background="@color/white"
+        android:text="Profile"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/PartyTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="49dp"
+        android:layout_marginTop="96dp"
         android:layout_marginEnd="16dp"
         android:fontFamily="@font/inter_font"
         android:text="@string/party_title"
-        android:textFontWeight="700"
         android:textColor="@color/white"
+        android:textFontWeight="700"
         android:textSize="30sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <!-- Create Party Button -->
-
-    <!-- Join Party Button -->
 
     <Button
         android:id="@+id/createPartyBtn"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="184dp"
+        android:layout_marginTop="160dp"
         android:layout_marginEnd="16dp"
         android:background="@drawable/rounded_btn"
         android:fontFamily="@font/inter_font"

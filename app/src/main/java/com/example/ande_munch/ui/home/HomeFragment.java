@@ -1,100 +1,324 @@
 package com.example.ande_munch.ui.home;
 
-
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.ContactsContract;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.ande_munch.LoginPage;
-import com.example.ande_munch.databinding.FragmentHomeBinding;
+import com.example.ande_munch.CuisineButtonAdapter;
+import com.example.ande_munch.FilterActivity;
+import com.example.ande_munch.R;
+import com.example.ande_munch.Restaurant;
+import com.example.ande_munch.RestaurantCardAdapter;
+import com.example.ande_munch.databinding.ExploreRestaurantsBinding;
+import com.example.ande_munch.methods.LoginMethods;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
-import java.util.HashMap;
-import java.util.Map;
+import androidx.recyclerview.widget.LinearLayoutManager;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class HomeFragment extends Fragment {
-
-    private FragmentHomeBinding binding;
-    FirebaseAuth auth = FirebaseAuth.getInstance();
-    FirebaseUser user = auth.getCurrentUser();
-    FirebaseFirestore db;
-    CollectionReference usersRef;
+    private static final String TAG = "ExploreRestaurants";
+    private @NonNull ExploreRestaurantsBinding binding;
+    private FirebaseAuth auth = FirebaseAuth.getInstance();
+    private FirebaseUser user = auth.getCurrentUser();
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private RecyclerView recyclerView;
+    private List<Restaurant> restaurants = new ArrayList<Restaurant>();;
+    private List<String> selectedCuisines = new ArrayList<>();
+    private RestaurantCardAdapter rcAdapter;
+    private EditText searchText;
+    private String searchString = "";
+    private String priceFilter = "Any";
+    private String ratingFilter = "Any";
+    private int distanceFilter = 0;
+    private LoginMethods loginMethods = new LoginMethods();
+    private List<String> urls =
+            Arrays.asList("bbq", "chinese", "fast_food", "hawker", "indian", "japanese", "mexican", "seafood", "thai", "western");
+    private List<String> cuisines =
+            Arrays.asList("BBQ", "Chinese", "Fast Food", "Hawker", "Indian", "Japanese", "Mexican", "Seafood", "Thai", "Western");
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        HomeViewModel homeViewModel =
-                new ViewModelProvider(this).get(HomeViewModel.class);
+        HomeViewModel homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
-        binding = FragmentHomeBinding.inflate(inflater, container, false);
+        binding = ExploreRestaurantsBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView textView = binding.textHome;
-        homeViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+        String email = loginMethods.getUserEmail();
+        Log.d(TAG, "Email: " + email);
+        CheckAndAddUser(email);
 
-        String email = getUserEmail();
-        System.out.println("Email: " + email);
-        printAllUserEmails(email);
+        searchText = (EditText) root.findViewById(R.id.searchText);
+        searchText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
 
-        // Implement button click listener for logging out
-        binding.logoutBtn.setOnClickListener(v -> signOutAndQuit());
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                searchString = editable.toString();
+                rcAdapter.updateData(filterRestaurants());
+                //Log.i(TAG,"Text changed: " + searchString);
+            }
+        });
+
+        // Initialize RecyclerView and Adapter
+        recyclerView = binding.RestaurantCards;
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        recyclerView.setLayoutManager(layoutManager);
+
+        restaurants = new ArrayList<Restaurant>();
+        db.collection("Restaurants")
+                .get()
+                .addOnCompleteListener(getRestaurantsTask -> {
+                            if (getRestaurantsTask.isSuccessful()) {
+                                for (DocumentSnapshot document : getRestaurantsTask.getResult()) {
+                                    DocumentReference restaurantReference = document.getReference();
+                                    CollectionReference menu = restaurantReference.collection("Menu");
+                                    CollectionReference reviews = restaurantReference.collection("Reviews");
+
+                                    Callback callback = new Callback() {
+                                        @Override
+                                        public void onSuccess(double avgPrice, double avgRating) {
+                                            restaurants.add(new Restaurant(document, avgPrice, avgRating));
+                                            rcAdapter.notifyItemInserted(restaurants.size() - 1);
+                                        }
+                                    };
+
+                                    getMenuAndReviewData1(menu, reviews, callback);
+                                }
+                                rcAdapter = new RestaurantCardAdapter(getContext(), restaurants);
+                                rcAdapter.setOnItemClickListener(new RestaurantCardAdapter.OnItemClickListener() {
+                                    @Override
+                                    public void onItemClick(String rid) {
+                                        Toast.makeText(requireContext(), "Item clicked: " + rid, Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                                RecyclerView resCards = root.findViewById(R.id.RestaurantCards);
+                                LinearLayoutManager rcLayoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
+                                resCards.setLayoutManager(rcLayoutManager);
+                                resCards.setAdapter(rcAdapter);
+                            }
+                        })
+                .addOnFailureListener(e -> Log.w(TAG, "Error fetching documents", e));
+
+        //Cuisine Buttons Layout
+        RecyclerView cuisineBtns = root.findViewById(R.id.cuisineBtns);
+        LinearLayoutManager cuisineLayoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
+        cuisineBtns.setLayoutManager(cuisineLayoutManager);
+        CuisineButtonAdapter cbAdapter = new CuisineButtonAdapter(requireContext(), cuisines, urls);
+        cbAdapter.setOnItemClickListener(new CuisineButtonAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(String cuisineName, View view) {
+                Toast.makeText(requireContext(), "Item clicked: " + cuisineName, Toast.LENGTH_SHORT).show();
+                if (selectedCuisines.contains(cuisineName)) {
+                    selectedCuisines.remove(cuisineName);
+                    view.setBackgroundResource(R.drawable.cuisine_button_bg);
+                } else {
+                    selectedCuisines.add(cuisineName);
+                    view.setBackgroundResource(R.drawable.selected_cuisine_button_bg);
+                }
+                rcAdapter.updateData(filterRestaurants());
+            }
+        });
+        cuisineBtns.setAdapter(cbAdapter);
+
+        ImageButton filterBtn = root.findViewById(R.id.filterButton);
+        filterBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(requireActivity(), FilterActivity.class);
+                getFilters.launch(intent);
+            }
+        });
 
         return root;
     }
 
-    private void signOutAndQuit() {
-        // Logout of application
-        FirebaseAuth.getInstance().signOut();
-
-        // Navigate back to login page
-        if (getActivity() != null) {
-            Intent intent = new Intent(getActivity(), LoginPage.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            getActivity().finish();
-        }
-    }
-
-    // Method to get the current user email
-    public String getUserEmail() {
-        return user.getEmail();
-    }
-
-    // Method to check if email exist, if not, then create a new user
-    public void printAllUserEmails(String email) {
+    public void CheckAndAddUser(String email) {
         db = FirebaseFirestore.getInstance();
+        loginMethods.checkDbForEmail(email).thenAccept(userExists -> {
+            if (!userExists) {
+                Log.d(TAG, "User email doesn't exist");
+                loginMethods.createUser(email);
+            } else {
+                Log.d(TAG, "User email exists");
+            }
+        }).exceptionally(e -> {
+            Log.e(TAG, "Error checking user in database: " + e);
+            return null;
+        });
+    }
 
-        db.collection("Users")
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        // Loop through all the users
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            // Check if the user email exist
-                            if (document.getId().equals(email)) {
-                                System.out.println("User email exist");
-                                return;
-                            } else {
-                                // If user doesn't exist then create a new user
-                                System.out.println("User email doesn't exist");
-                            }
-                        }
-                    } else {
-                        System.out.println("Error getting documents: " + task.getException());
-                    }
-                });
+    public List<Restaurant> filterRestaurants() {
+        List<Restaurant> filteredDocuments = restaurants;
+
+        //NO FILTERS
+        if (selectedCuisines.size() == 0 && searchString.length() == 0 && priceFilter.equals("Any") && ratingFilter.equals("Any") && distanceFilter == 0) {
+            return restaurants;
+        }
+
+        //NAME FILTER
+        if (searchString.length() > 0) {
+            filteredDocuments = filterByName(filteredDocuments);
+        }
+
+        //CUISINE FILTER
+        if (selectedCuisines.size() > 0) {
+            filteredDocuments = filterByCuisine(filteredDocuments);
+        }
+
+        //PRICE FILTER
+        if (!priceFilter.equals("Any")) {
+            filteredDocuments = filterByPrice(filteredDocuments);
+        }
+
+        //RATING FILTER
+        if (!ratingFilter.equals("Any")) {
+            filteredDocuments = filterByRating(filteredDocuments);
+        }
+
+        //DISTANCE FILTER
+        if (distanceFilter != 0) {
+
+        }
+        Log.i(TAG, "SELECTED :" + selectedCuisines + " Documents No: " + filteredDocuments.size() + " Res. No: " + restaurants.size());
+        return filteredDocuments;
+    }
+
+    public List<Restaurant> filterByName(List<Restaurant> restaurants) {
+        List<Restaurant> filteredDocuments = new ArrayList<>();
+        for (Restaurant document : restaurants) {
+            String rName = document.data.getId().toLowerCase();
+            String search = searchString.trim().replaceAll("\\s+", " ").toLowerCase();
+            if (rName.contains(search)) {
+                filteredDocuments.add(document);
+            }
+        }
+        return filteredDocuments;
+    }
+
+    public List<Restaurant> filterByCuisine(List<Restaurant> restaurants) {
+        List<Restaurant> filteredDocuments = new ArrayList<>();
+        for (Restaurant document : restaurants) {
+            for (String cuisine : (List<String>) document.data.get("Cuisine")) {
+                if (selectedCuisines.contains(cuisine)) {
+                    filteredDocuments.add(document);
+                    break;
+                }
+            }
+        }
+        return filteredDocuments;
+    }
+
+    public List<Restaurant> filterByRating(List<Restaurant> restaurants) {
+        List<Restaurant> filteredDocuments = new ArrayList<>();
+        for (Restaurant document : restaurants) {
+            double ratingValue = Double.parseDouble(ratingFilter.substring(0, ratingFilter.length() - 1));
+            if (document.avgRating >= ratingValue) {
+                filteredDocuments.add(document);
+            }
+        }
+        return filteredDocuments;
+    }
+
+    public List<Restaurant> filterByPrice(List<Restaurant> restaurants) {
+        List<Restaurant> filteredDocuments = new ArrayList<>();
+        for (Restaurant document : restaurants) {
+            int priceValue = Integer.parseInt(priceFilter.substring(1));
+            if (document.avgPrice <= priceValue) {
+                filteredDocuments.add(document);
+            }
+        }
+        return filteredDocuments;
+    }
+
+    private final ActivityResultLauncher<Intent> getFilters = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    Intent data = result.getData();
+                    priceFilter = data.getStringExtra("Price");
+                    ratingFilter = data.getStringExtra("Rating");
+                    distanceFilter = data.getIntExtra("Distance", 0);
+                    Log.i(TAG, "FILTERS RECEIVED: " + priceFilter + " " + ratingFilter + " " + distanceFilter);
+                    rcAdapter.updateData(filterRestaurants());
+                }
+            }
+    );
+
+    public void getMenuAndReviewData1(CollectionReference menu, CollectionReference reviews, Callback callback) {
+        menu.get().addOnCompleteListener(menuSnapshot -> {
+            double totalPrice = 0;
+            double dishCount = 0;
+
+            for (QueryDocumentSnapshot dish : menuSnapshot.getResult()) {
+                try {
+                    //Log.i(TAG, "DISH: " + dish.get("Price"));
+                    totalPrice += dish.getLong("Price").doubleValue();
+                    dishCount++;
+                } catch (Exception e) {
+                    Log.i(TAG, dish.getId());
+                }
+            }
+
+            double avgPrice = Math.round(totalPrice / dishCount * 100) / 100.0;
+            //Log.i(TAG, "getAvgPrice() worked");
+            getMenuAndReviewData2(reviews, avgPrice, callback);
+        });
+    }
+
+    public void getMenuAndReviewData2(CollectionReference reviews, double avgPrice, Callback callback) {
+        reviews.get().addOnCompleteListener(reviewsSnapshot -> {
+            double totalScore = 0;
+            double reviewCount = 0;
+            for (QueryDocumentSnapshot review : reviewsSnapshot.getResult()) {
+                try {
+                    //Log.i(TAG, "RATING :" + review.get("Rating"));
+                    totalScore += review.getLong("Rating").doubleValue();
+                } catch (Exception e) {
+                    //Log.i(TAG, "RATING : [NO REVIEWS]");
+                    totalScore = 0;
+                    break;
+                }
+                reviewCount++;
+            }
+            double avgRating = Math.round(totalScore / reviewCount * 2) / 2.0;
+            callback.onSuccess(avgPrice, avgRating);
+        });
+    }
+
+    public interface Callback {
+        void onSuccess(double result1, double result2);
     }
 
     @Override

@@ -47,14 +47,37 @@
         <activity
             android:name=".CreateParty"
             android:exported="true"
-            android:label="Login Page">
+            android:label="CreateParty Page">
         </activity>
 
         <activity
             android:name=".JoinParty"
             android:exported="true"
+            android:label="JoinParty Page">
+        </activity>
+
+        <activity
+            android:name=".ExploreRestaurants"
+            android:exported="true"
+            android:label="Explore Restaurants">
+        </activity>
+
+        <activity
+            android:name=".FilterActivity"
+            android:exported="true"
+            android:label="Filter Page">
+        </activity>
+
+        <activity
+            android:name=".RegisterPage"
+            android:exported="true"
             android:label="Login Page">
         </activity>
-    </application>
 
+        <activity
+            android:name=".ProfilePage"
+            android:exported="true"
+            android:label="Profile Page">
+        </activity>
+    </application>
 </manifest>

@@ -1,16 +1,22 @@
 package com.example.ande_munch.ui.dashboard;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import java.util.Map;
 import java.util.Random;
@@ -18,24 +24,37 @@ import java.util.HashMap;
 
 import com.example.ande_munch.CreateParty;
 import com.example.ande_munch.JoinParty;
+import com.example.ande_munch.LoginPage;
+import com.example.ande_munch.ProfilePage;
+import com.example.ande_munch.R;
 import com.example.ande_munch.databinding.FragmentDashboardBinding;
+import com.example.ande_munch.methods.LoginMethods;
+import com.example.ande_munch.methods.PartyMethods;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.example.ande_munch.DialogCallback;
 
 public class DashboardFragment extends Fragment {
 
     private FragmentDashboardBinding binding;
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     private static final int CODE_LENGTH = 4;
-    FirebaseAuth auth = FirebaseAuth.getInstance();
-    FirebaseUser user = auth.getCurrentUser();
+    FirebaseAuth mauth = FirebaseAuth.getInstance();
+    FirebaseUser currentUser = mauth.getCurrentUser();
     FirebaseFirestore db;
+    LoginMethods loginMethods = new LoginMethods();
+    PartyMethods partyMethods = new PartyMethods();
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         DashboardViewModel dashboardViewModel = new ViewModelProvider(this).get(DashboardViewModel.class);
@@ -44,7 +63,33 @@ public class DashboardFragment extends Fragment {
         View root = binding.getRoot();
 
         binding.createPartyBtn.setOnClickListener(view -> navigateToCreatePartyPage());
-        binding.joinPartyBtn.setOnClickListener(view -> navigateToJoinPartyPage());
+        binding.ProfileBtn.setOnClickListener(view -> navigateToProfilePage());
+
+        DialogCallback dialogCallback = new DialogCallback() {
+            @Override
+            public void onDialogResult(String dialogCode) {
+                // Handle the dialog code here
+                System.out.println("The dialog code is: " + dialogCode);
+
+                partyMethods.checkPartyCode(getContext(), dialogCode, partyCodeExists -> {
+                    // Check if the party code exists and handle it
+                    if (partyCodeExists) {
+                        // Party code exists
+                        System.out.println("Party found!");
+                    } else {
+                        // Party code does not exist
+                        System.out.println("Party not found.");
+                    }
+                }, e -> {
+                    // Handle the failure, e.g., show an error message
+                    System.out.println("Error: " + e.getMessage());
+                });
+            }
+        };
+
+        binding.joinPartyBtn.setOnClickListener(view -> {
+            showJoinPartyDialog(dialogCallback);
+        });
 
         // final TextView textView = binding.textDashboard;
         // dashboardViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
@@ -67,6 +112,11 @@ public class DashboardFragment extends Fragment {
     private void navigateToJoinPartyPage() {
         Intent joinPartyIntent = new Intent(getActivity(), JoinParty.class);
         startActivity(joinPartyIntent);
+    }
+
+    public void navigateToProfilePage() {
+        Intent intent = new Intent(getActivity(), ProfilePage.class);
+        startActivity(intent);
     }
 
     public void initCreateParty() {
@@ -101,7 +151,15 @@ public class DashboardFragment extends Fragment {
                         HashMap<String, Object> userDetails = entry.getValue();
 
                         // Add each user as a document to the 'Users' sub-collection of the party
-                        partyDocumentRef.collection("Users").document(userEmail).set(userDetails).addOnSuccessListener(aVoidUser -> Log.d("CreateParty", "User added to party: " + userEmail)).addOnFailureListener(e -> Log.w("CreateParty", "Error adding user to party", e));
+                        partyDocumentRef.collection("Users")
+                                .document(userEmail)
+                                .set(userDetails)
+                                .addOnSuccessListener(aVoidUser ->
+                                        Log.d("CreateParty", "User added to party: " + userEmail)
+                                )
+                                .addOnFailureListener(e ->
+                                        Log.w("CreateParty", "Error adding user to party", e)
+                                );
                     }
                 }).addOnFailureListener(e -> Log.w("CreateParty", "Error creating party document", e));
             }
@@ -111,36 +169,47 @@ public class DashboardFragment extends Fragment {
     public void getUserEmail(OnUserDataFetchedListener listener) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        // Get the Users collection
-        db.collection("Users").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+        if (currentUser != null) {
+            String currentUserEmail = currentUser.getEmail();
+
+            db.collection("Users").get().addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
+                    boolean userFound = false;
                     HashMap<String, HashMap<String, Object>> userDataMap = new HashMap<>();
 
                     for (QueryDocumentSnapshot document : task.getResult()) {
-                        // Use the Gmail account as the key for the userDataMap
-                        String gmailAccount = document.getId();
-                        Log.d("TAG", gmailAccount + " => " + document.getData());
+                        String emailAccount = document.getId();
 
-                        // Create a nested HashMap to store each user's details
-                        HashMap<String, Object> userDetails = new HashMap<>();
-                        userDetails.put("Diet", document.getString("Diet"));
-                        userDetails.put("ProfileImage", document.getString("ProfileImage"));
-                        userDetails.put("Username", document.getString("Username"));
+                        if (emailAccount.equals(currentUserEmail)) {
+                            userFound = true;
 
-                        // Put the nested HashMap into the userDataMap with the Gmail as the key
-                        userDataMap.put(gmailAccount, userDetails);
+                            Log.d("TAG", emailAccount + " => " + document.getData());
+
+                            HashMap<String, Object> userDetails = new HashMap<>();
+                            userDetails.put("Diet", document.getString("Diet"));
+                            userDetails.put("ProfileImage", document.getString("ProfileImage"));
+                            userDetails.put("Username", document.getString("Username"));
+
+                            userDataMap.put(emailAccount, userDetails);
+                            break; // Stop the loop as the user is found
+                        }
                     }
 
-                    // Use the callback to pass the userDataMap back
-                    listener.onUserDataFetched(userDataMap);
-
+                    if (userFound) {
+                        listener.onUserDataFetched(userDataMap);
+                    } else {
+                        Log.e("TAG", "User not found: " + currentUserEmail);
+                        Toast.makeText(getActivity(), "User not found", Toast.LENGTH_SHORT).show();
+                    }
                 } else {
-                    Log.d("TAG", "Error getting documents: ", task.getException());
+                    Log.e("TAG", "Error getting documents: ", task.getException());
+                    Toast.makeText(getActivity(), "Error fetching data", Toast.LENGTH_SHORT).show();
                 }
-            }
-        });
+            });
+        } else {
+            Log.e("TAG", "No current user logged in");
+            Toast.makeText(getActivity(), "No user logged in", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public String PartyCodeGenerator() {
@@ -156,6 +225,127 @@ public class DashboardFragment extends Fragment {
         System.out.println("The party code is: " + partyCode);
 
         return partyCode;
+    }
+
+    private void showJoinPartyDialog(DialogCallback callback) {
+        // Inflate the custom dialog layout
+        View customView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_layout, null);
+
+        // Create the Material Component Dialog
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireContext())
+                .setView(customView)
+                .setPositiveButton("Join", null) // We'll handle this in a custom way
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Handle the negative button action or dismiss the dialog
+                        dialog.dismiss();
+                    }
+                });
+
+        final EditText editText1 = customView.findViewById(R.id.editText1);
+        final EditText editText2 = customView.findViewById(R.id.editText2);
+        final EditText editText3 = customView.findViewById(R.id.editText3);
+        final EditText editText4 = customView.findViewById(R.id.editText4);
+
+        // Set a TextWatcher for each EditText
+        editText1.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() == 1) {
+                    editText2.requestFocus();
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
+        editText2.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() == 1) {
+                    editText3.requestFocus();
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
+        editText3.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() == 1) {
+                    editText4.requestFocus();
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
+        // Set a TextWatcher for editText4 to disable further input if it contains one character
+        editText4.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length() == 1) {
+                    editText4.setEnabled(false);
+                }
+            }
+        });
+
+        // Handle the positive button click here
+        builder.setPositiveButton("Join", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Handle the positive button action
+                // You can access the entered characters from the EditText widgets here
+                String input1 = editText1.getText().toString();
+                String input2 = editText2.getText().toString();
+                String input3 = editText3.getText().toString();
+                String input4 = editText4.getText().toString();
+
+                // Concatenate the inputs into a string
+                String dialogCode = input1 + input2 + input3 + input4;
+
+                // Dismiss the dialog
+                dialog.dismiss();
+
+                // Call the callback with the concatenated string
+                callback.onDialogResult(dialogCode);
+            }
+        });
+
+        // Show the dialog
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        // Request focus on the first EditText initially
+        editText1.requestFocus();
     }
 
     @Override
