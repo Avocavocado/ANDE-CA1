@@ -42,7 +42,9 @@
             android:layout_marginEnd="8dp"
             android:layout_weight="1"
             android:background="@drawable/dialog_input"
+            android:gravity="center"
             android:padding="8dp" />
+
 
         <EditText
             android:id="@+id/editText2"
@@ -52,6 +54,7 @@
             android:layout_marginEnd="8dp"
             android:layout_weight="1"
             android:background="@drawable/dialog_input"
+            android:gravity="center"
             android:padding="8dp" />
 
         <EditText
@@ -62,6 +65,7 @@
             android:layout_marginEnd="8dp"
             android:layout_weight="1"
             android:background="@drawable/dialog_input"
+            android:gravity="center"
             android:padding="8dp" />
 
         <EditText
@@ -72,6 +76,8 @@
             android:layout_marginEnd="16dp"
             android:layout_weight="1"
             android:background="@drawable/dialog_input"
+            android:gravity="center"
             android:padding="8dp" />
+
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
