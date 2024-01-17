@@ -44,17 +44,17 @@
             android:label="Login Page">
         </activity>
 
-        <activity
-            android:name=".CreateParty"
-            android:exported="true"
-            android:label="CreateParty Page">
-        </activity>
+        <!--        <activity-->
+        <!--            android:name=".CreateParty"-->
+        <!--            android:exported="true"-->
+        <!--            android:label="CreateParty Page">-->
+        <!--        </activity>-->
 
-        <activity
-            android:name=".JoinParty"
-            android:exported="true"
-            android:label="JoinParty Page">
-        </activity>
+        <!--        <activity-->
+        <!--            android:name=".JoinParty"-->
+        <!--            android:exported="true"-->
+        <!--            android:label="JoinParty Page">-->
+        <!--        </activity>-->
 
         <activity
             android:name=".ExploreRestaurants"
@@ -84,6 +84,12 @@
             android:name=".DisplayParty"
             android:exported="true"
             android:label="Display Party Page">
+        </activity>
+
+        <activity
+            android:name=".RestaurantDetails"
+            android:exported="true"
+            android:label="Restaurant Details">
         </activity>
     </application>
 </manifest>

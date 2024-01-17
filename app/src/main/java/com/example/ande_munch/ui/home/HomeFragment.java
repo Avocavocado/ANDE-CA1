@@ -25,6 +25,7 @@ import com.example.ande_munch.FilterActivity;
 import com.example.ande_munch.R;
 import com.example.ande_munch.Restaurant;
 import com.example.ande_munch.RestaurantCardAdapter;
+import com.example.ande_munch.RestaurantDetails;
 import com.example.ande_munch.databinding.ExploreRestaurantsBinding;
 import com.example.ande_munch.methods.LoginMethods;
 import com.google.firebase.auth.FirebaseAuth;
@@ -100,35 +101,39 @@ public class HomeFragment extends Fragment {
         db.collection("Restaurants")
                 .get()
                 .addOnCompleteListener(getRestaurantsTask -> {
-                    if (getRestaurantsTask.isSuccessful()) {
-                        for (DocumentSnapshot document : getRestaurantsTask.getResult()) {
-                            DocumentReference restaurantReference = document.getReference();
-                            CollectionReference menu = restaurantReference.collection("Menu");
-                            CollectionReference reviews = restaurantReference.collection("Reviews");
+                            if (getRestaurantsTask.isSuccessful()) {
+                                for (DocumentSnapshot document : getRestaurantsTask.getResult()) {
+                                    DocumentReference restaurantReference = document.getReference();
+                                    CollectionReference menu = restaurantReference.collection("Menu");
+                                    CollectionReference reviews = restaurantReference.collection("Reviews");
 
-                            Callback callback = new Callback() {
-                                @Override
-                                public void onSuccess(double avgPrice, double avgRating) {
-                                    restaurants.add(new Restaurant(document, avgPrice, avgRating));
-                                    rcAdapter.notifyItemInserted(restaurants.size() - 1);
+                                    Callback callback = new Callback() {
+                                        @Override
+                                        public void onSuccess(double avgPrice, double avgRating) {
+                                            restaurants.add(new Restaurant(document, avgPrice, avgRating));
+                                            rcAdapter.notifyItemInserted(restaurants.size() - 1);
+                                        }
+                                    };
+
+                                    getMenuAndReviewData1(menu, reviews, callback);
                                 }
-                            };
-
-                            getMenuAndReviewData1(menu, reviews, callback);
-                        }
-                        rcAdapter = new RestaurantCardAdapter(getContext(), restaurants);
-                        rcAdapter.setOnItemClickListener(new RestaurantCardAdapter.OnItemClickListener() {
-                            @Override
-                            public void onItemClick(String rid) {
-                                Toast.makeText(requireContext(), "Item clicked: " + rid, Toast.LENGTH_SHORT).show();
+                                rcAdapter = new RestaurantCardAdapter(getContext(), restaurants);
+                                rcAdapter.setOnItemClickListener(new RestaurantCardAdapter.OnItemClickListener() {
+                                    @Override
+                                    public void onItemClick(String rid, double avgPrice, double avgRating) {
+                                        Intent intent = new Intent(requireActivity(), RestaurantDetails.class);
+                                        intent.putExtra("RestaurantId", rid);
+                                        intent.putExtra("AvgPrice", avgPrice);
+                                        intent.putExtra("AvgRating", avgRating);
+                                        startActivity(intent);
+                                    }
+                                });
+                                RecyclerView resCards = root.findViewById(R.id.RestaurantCards);
+                                LinearLayoutManager rcLayoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
+                                resCards.setLayoutManager(rcLayoutManager);
+                                resCards.setAdapter(rcAdapter);
                             }
-                        });
-                        RecyclerView resCards = root.findViewById(R.id.RestaurantCards);
-                        LinearLayoutManager rcLayoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
-                        resCards.setLayoutManager(rcLayoutManager);
-                        resCards.setAdapter(rcAdapter);
-                    }
-                })
+                        })
                 .addOnFailureListener(e -> Log.w(TAG, "Error fetching documents", e));
 
         //Cuisine Buttons Layout
