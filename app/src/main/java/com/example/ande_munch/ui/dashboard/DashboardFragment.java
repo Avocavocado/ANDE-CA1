@@ -22,8 +22,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.HashMap;
 
-import com.example.ande_munch.CreateParty;
-import com.example.ande_munch.JoinParty;
+import com.example.ande_munch.DisplayParty;
 import com.example.ande_munch.LoginPage;
 import com.example.ande_munch.ProfilePage;
 import com.example.ande_munch.R;
@@ -48,8 +47,6 @@ import com.example.ande_munch.DialogCallback;
 public class DashboardFragment extends Fragment {
 
     private FragmentDashboardBinding binding;
-    private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    private static final int CODE_LENGTH = 4;
     FirebaseAuth mauth = FirebaseAuth.getInstance();
     FirebaseUser currentUser = mauth.getCurrentUser();
     FirebaseFirestore db;
@@ -62,7 +59,6 @@ public class DashboardFragment extends Fragment {
         binding = FragmentDashboardBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        binding.createPartyBtn.setOnClickListener(view -> navigateToCreatePartyPage());
         binding.ProfileBtn.setOnClickListener(view -> navigateToProfilePage());
 
         DialogCallback dialogCallback = new DialogCallback() {
@@ -76,6 +72,7 @@ public class DashboardFragment extends Fragment {
                     if (partyCodeExists) {
                         // Party code exists
                         System.out.println("Party found!");
+                        navigateToDisplayParty();
                     } else {
                         // Party code does not exist
                         System.out.println("Party not found.");
@@ -91,6 +88,8 @@ public class DashboardFragment extends Fragment {
             showJoinPartyDialog(dialogCallback);
         });
 
+        binding.createPartyBtn.setOnClickListener(view -> navigateToDisplayParty());
+
         // final TextView textView = binding.textDashboard;
         // dashboardViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
 
@@ -103,19 +102,13 @@ public class DashboardFragment extends Fragment {
     }
 
     // Navigation methods
-    private void navigateToCreatePartyPage() {
-        Intent createPartyIntent = new Intent(getActivity(), CreateParty.class);
-        initCreateParty();
-        startActivity(createPartyIntent);
-    }
-
-    private void navigateToJoinPartyPage() {
-        Intent joinPartyIntent = new Intent(getActivity(), JoinParty.class);
-        startActivity(joinPartyIntent);
-    }
-
     public void navigateToProfilePage() {
         Intent intent = new Intent(getActivity(), ProfilePage.class);
+        startActivity(intent);
+    }
+
+    public void navigateToDisplayParty() {
+        Intent intent = new Intent(getActivity(), DisplayParty.class);
         startActivity(intent);
     }
 
@@ -132,7 +125,7 @@ public class DashboardFragment extends Fragment {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         // Generate the 4-digit party code
-        String partyCode = PartyCodeGenerator();
+        String partyCode = partyMethods.PartyCodeGenerator();
 
         // Get user emails and details to add to the party
         getUserEmail(new OnUserDataFetchedListener() {
@@ -210,21 +203,6 @@ public class DashboardFragment extends Fragment {
             Log.e("TAG", "No current user logged in");
             Toast.makeText(getActivity(), "No user logged in", Toast.LENGTH_SHORT).show();
         }
-    }
-
-    public String PartyCodeGenerator() {
-        Random random = new Random();
-        StringBuilder codeBuilder = new StringBuilder(CODE_LENGTH);
-
-        for (int i = 0; i < CODE_LENGTH; i++) {
-            int randomIndex = random.nextInt(CHARACTERS.length());
-            codeBuilder.append(CHARACTERS.charAt(randomIndex));
-        }
-
-        String partyCode = codeBuilder.toString();
-        System.out.println("The party code is: " + partyCode);
-
-        return partyCode;
     }
 
     private void showJoinPartyDialog(DialogCallback callback) {

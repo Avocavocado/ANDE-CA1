@@ -79,5 +79,11 @@
             android:exported="true"
             android:label="Profile Page">
         </activity>
+
+        <activity
+            android:name=".DisplayParty"
+            android:exported="true"
+            android:label="Display Party Page">
+        </activity>
     </application>
 </manifest>
