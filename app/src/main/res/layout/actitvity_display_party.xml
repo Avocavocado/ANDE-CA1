@@ -77,4 +77,10 @@
             android:text="Swipe"
             android:textColor="#FFFFFF" />
     </LinearLayout>
+
+    <Button
+        android:id="@+id/partyFilterBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Filter" />
 </FrameLayout>

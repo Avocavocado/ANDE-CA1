@@ -14,7 +14,6 @@
       },
       "oauth_client": [
         {
-<<<<<<< HEAD
           "client_id": "728293663830-9bvhg673m99lj0o05ugguahmtbmnmjhi.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -31,13 +30,19 @@
           }
         },
         {
-=======
->>>>>>> 80545cfc6ca647061dae31c7a2b1ce9fb68f0a00
           "client_id": "728293663830-uj30ink930oodb17p45jh6skegc086v4.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.example.ande_munch",
             "certificate_hash": "b42b7af7db2765358ff57eebf2fb602243fec43e"
+          }
+        },
+        {
+          "client_id": "728293663830-ujqvel2tk8jqbfsta8nkolp9ucv55ceu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.ande_munch",
+            "certificate_hash": "444b5ca7f20991948db5ed192a80ef9c7516e79b"
           }
         },
         {

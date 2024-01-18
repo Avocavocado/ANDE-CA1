@@ -4,24 +4,25 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:background="@drawable/party_container">
 
-<!--    <TextView-->
-<!--        android:id="@+id/tvPartyMemberName"-->
-<!--        android:layout_width="278dp"-->
-<!--        android:layout_height="match_parent"-->
-<!--        android:layout_weight="1"-->
-<!--        android:background="@drawable/your_custom_rectangle_drawable"-->
-<!--        android:gravity="center_vertical"-->
-<!--        android:padding="16dp"-->
-<!--        android:text="Dillan Tan"-->
-<!--        android:textColor="@color/black"-->
-<!--        android:textSize="18sp" />-->
+    <TextView
+        android:id="@+id/tvPartyMemberName"
+        android:layout_width="278dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:padding="16dp"
+        android:text="Dillan Tan"
+        android:textColor="@color/black"
+        android:textSize="18sp" />
 
-<!--    <ImageView-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:src="@drawable/your_icon_drawable"-->
-<!--        android:layout_gravity="end"-->
-<!--        android:padding="16dp" />-->
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/party_leader"
+        android:layout_gravity="end"
+        android:padding="16dp" />
 </LinearLayout>

@@ -85,5 +85,11 @@
             android:exported="true"
             android:label="Display Party Page">
         </activity>
+
+        <activity
+            android:name=".PartyFilter"
+            android:exported="true"
+            android:label="Display Party Filter Page">
+        </activity>
     </application>
 </manifest>

@@ -47,14 +47,9 @@ public class LoginPage extends AppCompatActivity {
     FirebaseAuth auth = FirebaseAuth.getInstance();
     FirebaseUser user = auth.getCurrentUser();
 
-<<<<<<< HEAD
     EditText editTextEmailPhone;
-    EditText editTextPassword;
-    Button buttonLogin;
-=======
     // New Instance of LoginMethods
     LoginMethods loginMethods = new LoginMethods();
->>>>>>> 80545cfc6ca647061dae31c7a2b1ce9fb68f0a00
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
