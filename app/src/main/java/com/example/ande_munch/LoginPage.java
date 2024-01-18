@@ -47,6 +47,7 @@ public class LoginPage extends AppCompatActivity {
     FirebaseAuth auth = FirebaseAuth.getInstance();
     FirebaseUser user = auth.getCurrentUser();
 
+    EditText editTextEmailPhone;
     // New Instance of LoginMethods
     LoginMethods loginMethods = new LoginMethods();
 
@@ -56,6 +57,11 @@ public class LoginPage extends AppCompatActivity {
         setContentView(R.layout.activity_login_page);
 
         editTextEmail = findViewById(R.id.emailEditText);
+        editTextPassword = findViewById(R.id.passwordEditText);
+        buttonLogin = findViewById(R.id.loginButton);
+
+        // Initialize your UI elements here
+        editTextEmailPhone = findViewById(R.id.emailEditText);
         editTextPassword = findViewById(R.id.passwordEditText);
         buttonLogin = findViewById(R.id.loginButton);
 
