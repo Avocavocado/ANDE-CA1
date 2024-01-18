@@ -1,8 +1,12 @@
 package com.example.ande_munch;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -48,6 +52,14 @@ public class RestaurantDetails extends AppCompatActivity {
         cuisines = findViewById(R.id.restaurantDetailsCuisines);
         rating = findViewById(R.id.restaurantDetailsRating);
         details = findViewById(R.id.restarauntDetails);
+
+        ImageButton closeDetails = findViewById(R.id.closeRestaurantDetails);
+        closeDetails.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
     }
 
    @Override
@@ -83,6 +95,18 @@ public class RestaurantDetails extends AppCompatActivity {
        }
        details.setText(detailsText);
 
+        //SET NEW REVIEW BUTTON LISTENER
+       ImageButton newReviewBtn = findViewById(R.id.newReview);
+       newReviewBtn.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View view) {
+               Intent intent = new Intent(RestaurantDetails.this, NewReviewActivity.class);
+               intent.putExtra("RestaurantId", restaurantID);
+               startActivity(intent);
+           }
+       });
+
+        //DISPLAY CUISINES
        cuisines.removeAllViews();
        for (String cuisine: cuisineArray) {
            TextView textView = new TextView(this);
@@ -113,7 +137,6 @@ public class RestaurantDetails extends AppCompatActivity {
             });
 
        //GET USER REVIEWS
-
        db.collection("Restaurants").document(restaurantID).collection("Reviews").get()
                .addOnCompleteListener(reviewSnapshot -> {
                    if (reviewSnapshot.isSuccessful()) {

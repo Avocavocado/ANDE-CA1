@@ -294,7 +294,7 @@ public class HomeFragment extends Fragment {
             for (QueryDocumentSnapshot dish : menuSnapshot.getResult()) {
                 try {
                     //Log.i(TAG, "DISH: " + dish.get("Price"));
-                    totalPrice += dish.getLong("Price").doubleValue();
+                    totalPrice += dish.getDouble("Price");
                     dishCount++;
                 } catch (Exception e) {
                     Log.i(TAG, dish.getId());
@@ -314,7 +314,7 @@ public class HomeFragment extends Fragment {
             for (QueryDocumentSnapshot review : reviewsSnapshot.getResult()) {
                 try {
                     //Log.i(TAG, "RATING :" + review.get("Rating"));
-                    totalScore += review.getLong("Rating").doubleValue();
+                    totalScore += review.getDouble("Rating");
                 } catch (Exception e) {
                     //Log.i(TAG, "RATING : [NO REVIEWS]");
                     totalScore = 0;
