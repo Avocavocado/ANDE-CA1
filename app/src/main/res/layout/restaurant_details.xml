@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+<androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF">
@@ -18,7 +22,7 @@
         app:srcCompat="@android:drawable/ic_menu_close_clear_cancel" />
 
     <ImageView
-        android:id="@+id/imageView3"
+        android:id="@+id/restaurantDetailsImage"
         android:layout_width="350sp"
         android:layout_height="160sp"
         android:layout_marginTop="16dp"
@@ -26,7 +30,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/closeRestaurantDetails"
-        tools:srcCompat="@tools:sample/backgrounds/scenic" />
+        tools:srcCompat="@tools:sample/backgrounds/scenic" >
+    </ImageView>
 
     <TextView
         android:id="@+id/restaurantDetailsName"
@@ -37,7 +42,17 @@
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView3" />
+        app:layout_constraintTop_toBottomOf="@+id/restaurantDetailsImage" />
+
+    <LinearLayout
+        android:id="@+id/restaurantDetailsCuisines"
+        android:layout_width="320dp"
+        android:layout_height="26dp"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/restaurantDetailsName" />
 
     <TextView
         android:id="@+id/restarauntDetailsDesc"
@@ -46,17 +61,9 @@
         android:text="[RESTAURANT DETAILS]"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/restaurantDetailsName" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/restarauntDetailsCuisines"
-        android:layout_width="363dp"
-        android:layout_height="26dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/restarauntDetailsDesc" />
+        app:layout_constraintTop_toBottomOf="@+id/restaurantDetailsCuisines" />
 
     <TextView
         android:id="@+id/restarauntDetails"
@@ -66,7 +73,7 @@
         android:text="[RESTAURANT LOCATION]+[PRICE]+[OPENING HOURS]"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/restarauntDetailsCuisines" />
+        app:layout_constraintTop_toBottomOf="@+id/restarauntDetailsDesc" />
 
     <TextView
         android:id="@+id/textView9"
@@ -76,7 +83,7 @@
         android:text="Featured Dishes"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.07"
+        app:layout_constraintHorizontal_bias="0.1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/restarauntDetails" />
 
@@ -94,8 +101,8 @@
         android:id="@+id/textView10"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="20dp"
         android:text="Reviews"
         android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
@@ -104,7 +111,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/reviews"
         android:layout_width="370dp"
-        android:layout_height="149dp"
+        android:layout_height="360dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView10" />
@@ -130,8 +137,9 @@
         android:background="#FFFFFF"
         android:text="Rating"
         android:textColor="#000000"
-        app:layout_constraintEnd_toEndOf="@+id/imageView3"
+        app:layout_constraintEnd_toEndOf="@+id/restaurantDetailsImage"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="@+id/imageView3"
-        app:layout_constraintTop_toTopOf="@+id/imageView3" />
+        app:layout_constraintStart_toStartOf="@+id/restaurantDetailsImage"
+        app:layout_constraintTop_toTopOf="@+id/restaurantDetailsImage" />
 </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

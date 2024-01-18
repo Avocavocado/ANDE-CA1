@@ -38,6 +38,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -59,9 +60,9 @@ public class HomeFragment extends Fragment {
     private int distanceFilter = 0;
     private LoginMethods loginMethods = new LoginMethods();
     private List<String> urls =
-            Arrays.asList("bbq", "chinese", "fast_food", "hawker", "indian", "japanese", "mexican", "seafood", "thai", "western");
+            Arrays.asList("bbq", "chinese", "fast_food", "hawker", "indian", "japanese", "malay", "mexican", "seafood", "thai", "western");
     private List<String> cuisines =
-            Arrays.asList("BBQ", "Chinese", "Fast Food", "Hawker", "Indian", "Japanese", "Mexican", "Seafood", "Thai", "Western");
+            Arrays.asList("BBQ", "Chinese", "Fast Food", "Hawker", "Indian", "Japanese", "Malay", "Mexican", "Seafood", "Thai", "Western");
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -120,11 +121,15 @@ public class HomeFragment extends Fragment {
                                 rcAdapter = new RestaurantCardAdapter(getContext(), restaurants);
                                 rcAdapter.setOnItemClickListener(new RestaurantCardAdapter.OnItemClickListener() {
                                     @Override
-                                    public void onItemClick(String rid, double avgPrice, double avgRating) {
+                                    public void onItemClick(Restaurant restaurant) {
                                         Intent intent = new Intent(requireActivity(), RestaurantDetails.class);
-                                        intent.putExtra("RestaurantId", rid);
-                                        intent.putExtra("AvgPrice", avgPrice);
-                                        intent.putExtra("AvgRating", avgRating);
+                                        intent.putExtra("RestaurantId", restaurant.data.getId());
+                                        intent.putExtra("AvgPrice", restaurant.avgPrice);
+                                        intent.putExtra("AvgRating", restaurant.avgRating);
+                                        intent.putExtra("Desc", restaurant.data.getString("Desc"));
+                                        intent.putStringArrayListExtra("Cuisine",  (ArrayList<String>) restaurant.data.get("Cuisine"));
+                                        intent.putExtra("OpeningHours", (Serializable) restaurant.data.get("OpeningHours"));
+                                        intent.putExtra("Image", restaurant.data.getString("RestaurantImage"));
                                         startActivity(intent);
                                     }
                                 });
