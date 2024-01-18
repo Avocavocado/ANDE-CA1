@@ -22,7 +22,7 @@ public class RestaurantCardAdapter extends RecyclerView.Adapter<RestaurantCardAd
     private static RestaurantCardAdapter.OnItemClickListener onItemClickListener;
 
     public interface OnItemClickListener {
-        void onItemClick(String rid);
+        void onItemClick(String rid, double avgPrice, double avgRating);
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -30,6 +30,8 @@ public class RestaurantCardAdapter extends RecyclerView.Adapter<RestaurantCardAd
         private final TextView RestaurantDesc;
         private final ImageView RestaurantImage;
         private final LinearLayout Cuisines;
+        private double avgPrice;
+        private double avgRating;
 
         public ViewHolder(View view) {
             super(view);
@@ -44,7 +46,7 @@ public class RestaurantCardAdapter extends RecyclerView.Adapter<RestaurantCardAd
                 @Override
                 public void onClick(View v) {
                     if (onItemClickListener != null) {
-                        onItemClickListener.onItemClick(RestaurantName.getText().toString());
+                        onItemClickListener.onItemClick(RestaurantName.getText().toString(),avgPrice,avgRating);
                     }
                 }
             });
@@ -58,6 +60,13 @@ public class RestaurantCardAdapter extends RecyclerView.Adapter<RestaurantCardAd
         }
         public ImageView getImage() { return RestaurantImage; }
         public LinearLayout getCuisines() { return Cuisines; }
+        public void setAvgPrice(double avgPrice) {
+            this.avgPrice = avgPrice;
+        }
+
+        public void setAvgRating(double avgRating) {
+            this.avgRating = avgRating;
+        }
     }
 
     public RestaurantCardAdapter(Context context, List<Restaurant> dataSet) {
@@ -83,9 +92,12 @@ public class RestaurantCardAdapter extends RecyclerView.Adapter<RestaurantCardAd
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
         Restaurant item = localDataSet.get(position);
-        viewHolder.getName().setText(item.data.getId() + "[PRICE: " + item.avgPrice + ", RATING: " + item.avgRating + "]");
+        viewHolder.getName().setText(item.data.getId());
         viewHolder.getDesc().setText(item.data.getString("Desc"));
         Picasso.get().load(item.data.getString("RestaurantImage")).into(viewHolder.getImage());
+        viewHolder.setAvgPrice(item.avgPrice);
+        viewHolder.setAvgRating(item.avgRating);
+
         viewHolder.getCuisines().removeAllViews();
         for (String cuisine: (List<String>) item.data.get("Cuisine")) {
             TextView textView = new TextView(context);

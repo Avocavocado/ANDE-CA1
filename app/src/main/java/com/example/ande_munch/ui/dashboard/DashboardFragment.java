@@ -49,9 +49,10 @@ public class DashboardFragment extends Fragment {
     private FragmentDashboardBinding binding;
     FirebaseAuth mauth = FirebaseAuth.getInstance();
     FirebaseUser currentUser = mauth.getCurrentUser();
-    FirebaseFirestore db;
     LoginMethods loginMethods = new LoginMethods();
     PartyMethods partyMethods = new PartyMethods();
+
+    String userEmail = currentUser.getEmail();
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         DashboardViewModel dashboardViewModel = new ViewModelProvider(this).get(DashboardViewModel.class);
@@ -73,6 +74,8 @@ public class DashboardFragment extends Fragment {
                         // Party code exists
                         System.out.println("Party found!");
                         navigateToDisplayParty();
+                        // Call the method with the correct parameters
+                        partyMethods.addUserToParty(userEmail, dialogCode);
                     } else {
                         // Party code does not exist
                         System.out.println("Party not found.");
@@ -88,7 +91,10 @@ public class DashboardFragment extends Fragment {
             showJoinPartyDialog(dialogCallback);
         });
 
-        binding.createPartyBtn.setOnClickListener(view -> navigateToDisplayParty());
+        binding.createPartyBtn.setOnClickListener(view -> {
+            initCreateParty();
+            navigateToDisplayParty();
+        });
 
         // final TextView textView = binding.textDashboard;
         // dashboardViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
