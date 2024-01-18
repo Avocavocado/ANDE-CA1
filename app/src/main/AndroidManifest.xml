@@ -91,5 +91,11 @@
             android:exported="true"
             android:label="Display Party Filter Page">
         </activity>
+
+        <activity
+            android:name=".RestaurantDetails"
+            android:exported="true"
+            android:label="Display Restaurant Details Page">
+        </activity>
     </application>
 </manifest>

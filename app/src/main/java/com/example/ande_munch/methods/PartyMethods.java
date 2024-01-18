@@ -13,8 +13,10 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
@@ -144,8 +146,38 @@ public class PartyMethods {
                     });
                 }
             }
+
+            @Override
+            public void onUserDataFetched(List<Map<String, Object>> usersList) {
+
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+
+            }
         });
     }
+
+    public void getUserFilterDetails(String PartyCode, Callback callback) {
+        db.collection("Parties").document(PartyCode).collection("Users")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<Map<String, Object>> usersList = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        Map<String, Object> userDetails = document.getData();
+                        userDetails.put("email", document.getId()); // Include the email in the userDetails map
+                        usersList.add(userDetails);
+                    }
+                    Log.d("getUserFilter", "Got User Details: " + usersList);
+                    callback.onUserDataFetched(usersList);
+                })
+                .addOnFailureListener(e -> {
+                    Log.d("PartyMethods", "Error getting user details: " + e.getMessage());
+                    callback.onFailure(e); // Handle the failure case
+                });
+    }
+
 
     // Helper method to show a toast message
     private void showToast(Context context, String message) {

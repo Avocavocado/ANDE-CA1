@@ -18,6 +18,7 @@ import android.content.Intent;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.HashMap;
@@ -27,6 +28,7 @@ import com.example.ande_munch.LoginPage;
 import com.example.ande_munch.ProfilePage;
 import com.example.ande_munch.R;
 import com.example.ande_munch.databinding.FragmentDashboardBinding;
+import com.example.ande_munch.methods.Callback;
 import com.example.ande_munch.methods.LoginMethods;
 import com.example.ande_munch.methods.PartyMethods;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -76,6 +78,22 @@ public class DashboardFragment extends Fragment {
                         navigateToDisplayParty();
                         // Call the method with the correct parameters
                         partyMethods.addUserToParty(userEmail, dialogCode);
+                        partyMethods.getUserFilterDetails(dialogCode, new Callback() {
+                            @Override
+                            public void onUserChecked(boolean userExists) {
+
+                            }
+
+                            @Override
+                            public void onUserDataFetched(List<Map<String, Object>> usersList) {
+
+                            }
+
+                            @Override
+                            public void onFailure(Exception e) {
+
+                            }
+                        });
                     } else {
                         // Party code does not exist
                         System.out.println("Party not found.");

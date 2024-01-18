@@ -38,7 +38,7 @@ public class PartyFilter extends AppCompatActivity {
     private TextView distanceText;
     private Button saveFilterBtn;
     private List<String> cuisines =
-            Arrays.asList("BBQ", "Chinese", "Fast Food", "Hawker", "Indian", "Japanese", "Mexican", "Seafood", "Thai", "Western");
+            Arrays.asList("BBQ", "Chinese", "Fast Food", "Hawker", "Indian", "Japanese", "Mexican", "Seafood", "Thai", "Western", "Malay");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
