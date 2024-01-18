@@ -90,7 +90,7 @@ public class PartyFilter extends AppCompatActivity {
                 updateDistance();
             }
         });
-        toggleGroupCuisine = findViewById(R.id.btnGroupCuisine);
+        // toggleGroupCuisine = findViewById(R.id.btnGroupCuisine);
         createCuisineButtons();
     }
 
@@ -151,7 +151,4 @@ public class PartyFilter extends AppCompatActivity {
         Log.d(TAG, "Final Value: " + finalValue);
         distanceText.setText(finalValue == 0.0f ? "Any" : finalValue+"km");
     }
-
-
-
 }

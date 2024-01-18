@@ -17,4 +17,16 @@
     <string name="welcomeText">What would you like to eat today?</string>
     <string name="searchHintText">Search for restaurants...</string>
     <string name="profileButtonText">profile settings button</string>
+
+    <!-- Filter Page Strings -->
+    <string name="chinese_cuisine_title">Chinese</string>
+    <string name="malay_cuisine_title">Malay</string>
+    <string name="indian_cuisine_title">Indian</string>
+    <string name="japanese_cuisine_title">Japanese</string>
+    <string name="korean_cuisine_title">Korean</string>
+    <string name="western_cuisine_title">Western</string>
+    <string name="mexican_cuisine_title">Mexican</string>
+    <string name="Italian_cuisine_title">Italian</string>
+    <string name="cake_cuisine_title">Cake</string>
+
 </resources>
