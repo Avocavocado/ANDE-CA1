@@ -29,4 +29,6 @@
     <string name="Italian_cuisine_title">Italian</string>
     <string name="cake_cuisine_title">Cake</string>
 
+
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyBwX0rW5nkKzcKetn9vZETiJaQnoPdaoEk</string>
 </resources>

@@ -15,6 +15,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -25,11 +31,12 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-public class RestaurantDetails extends AppCompatActivity {
+public class RestaurantDetails extends AppCompatActivity implements OnMapReadyCallback {
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private TextView restaurantName;
     private MenuCardAdapter mcAdapter;
+    private GoogleMap mMap;
     private ReviewsAdapter rvAdapter;
     private ImageView rImage;
     private TextView desc;
@@ -40,7 +47,8 @@ public class RestaurantDetails extends AppCompatActivity {
     List<Review> reviewItems;
     private final String TAG = "RestaurantDetails";
     private final String[] weekdays = new String[] {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat"," Sun"};
-
+    private double lat;
+    private double lon;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,6 +68,10 @@ public class RestaurantDetails extends AppCompatActivity {
                 finish();
             }
         });
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.mapFragment);
+        mapFragment.getMapAsync((OnMapReadyCallback) this);
     }
 
    @Override
@@ -72,6 +84,8 @@ public class RestaurantDetails extends AppCompatActivity {
         double avgRating = info.getDouble("AvgRating");
         String imageUrl = info.getString("Image");
         String descText = info.getString("Desc");
+        lat = info.getDouble("Lat");
+        lon = info.getDouble("Lon");
         ArrayList<String> cuisineArray = info.getStringArrayList("Cuisine");
         ArrayList<Object> openingHoursArray = (ArrayList<Object>) info.get("OpeningHours");
 
@@ -164,5 +178,15 @@ public class RestaurantDetails extends AppCompatActivity {
                        }
                    }
                });
+
    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+        // Add a marker in Singapore and move the camera
+        LatLng sg = new LatLng(lat, lon);
+        //mMap.addMarker(new MarkerOptions().position(sg).title("Marker in Singapore"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(sg));
+    }
 }

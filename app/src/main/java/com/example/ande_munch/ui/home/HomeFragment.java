@@ -34,6 +34,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -123,6 +124,9 @@ public class HomeFragment extends Fragment {
                                     @Override
                                     public void onItemClick(Restaurant restaurant) {
                                         Intent intent = new Intent(requireActivity(), RestaurantDetails.class);
+                                        GeoPoint geopoint = restaurant.data.getGeoPoint("Location");
+                                        intent.putExtra("Lat", geopoint.getLatitude());
+                                        intent.putExtra("Lon", geopoint.getLongitude());
                                         intent.putExtra("RestaurantId", restaurant.data.getId());
                                         intent.putExtra("AvgPrice", restaurant.avgPrice);
                                         intent.putExtra("AvgRating", restaurant.avgRating);
