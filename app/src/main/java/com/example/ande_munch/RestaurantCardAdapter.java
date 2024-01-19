@@ -22,7 +22,7 @@ public class RestaurantCardAdapter extends RecyclerView.Adapter<RestaurantCardAd
     private static RestaurantCardAdapter.OnItemClickListener onItemClickListener;
 
     public interface OnItemClickListener {
-        void onItemClick(String rid, double avgPrice, double avgRating);
+        void onItemClick(Restaurant restaurant);
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -32,6 +32,7 @@ public class RestaurantCardAdapter extends RecyclerView.Adapter<RestaurantCardAd
         private final LinearLayout Cuisines;
         private double avgPrice;
         private double avgRating;
+        private Restaurant restaurant;
 
         public ViewHolder(View view) {
             super(view);
@@ -46,7 +47,7 @@ public class RestaurantCardAdapter extends RecyclerView.Adapter<RestaurantCardAd
                 @Override
                 public void onClick(View v) {
                     if (onItemClickListener != null) {
-                        onItemClickListener.onItemClick(RestaurantName.getText().toString(),avgPrice,avgRating);
+                        onItemClickListener.onItemClick(restaurant);
                     }
                 }
             });
@@ -60,12 +61,8 @@ public class RestaurantCardAdapter extends RecyclerView.Adapter<RestaurantCardAd
         }
         public ImageView getImage() { return RestaurantImage; }
         public LinearLayout getCuisines() { return Cuisines; }
-        public void setAvgPrice(double avgPrice) {
-            this.avgPrice = avgPrice;
-        }
-
-        public void setAvgRating(double avgRating) {
-            this.avgRating = avgRating;
+        public void setData(Restaurant restaurant) {
+            this.restaurant = restaurant;
         }
     }
 
@@ -95,8 +92,7 @@ public class RestaurantCardAdapter extends RecyclerView.Adapter<RestaurantCardAd
         viewHolder.getName().setText(item.data.getId());
         viewHolder.getDesc().setText(item.data.getString("Desc"));
         Picasso.get().load(item.data.getString("RestaurantImage")).into(viewHolder.getImage());
-        viewHolder.setAvgPrice(item.avgPrice);
-        viewHolder.setAvgRating(item.avgRating);
+        viewHolder.setData(item);
 
         viewHolder.getCuisines().removeAllViews();
         for (String cuisine: (List<String>) item.data.get("Cuisine")) {

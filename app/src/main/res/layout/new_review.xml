@@ -6,36 +6,45 @@
     android:layout_height="match_parent">
 
     <ImageButton
-        android:id="@+id/imageButton4"
+        android:id="@+id/cancelReviewBtn"
         android:layout_width="49dp"
         android:layout_height="50dp"
-        app:srcCompat="@android:drawable/ic_menu_close_clear_cancel"
-        tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="16dp" />
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.044"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@android:drawable/ic_menu_close_clear_cancel" />
 
     <TextView
         android:id="@+id/textView4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="160dp"
         android:text="Leave A Review!"
         android:textColor="#000000"
         android:textSize="24sp"
-        tools:layout_editor_absoluteX="119dp"
-        tools:layout_editor_absoluteY="158dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textView5"
+        android:id="@+id/restaurantName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:text="[restaurant_name]"
         android:textSize="18sp"
-        tools:layout_editor_absoluteX="133dp"
-        tools:layout_editor_absoluteY="190dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
     <EditText
-        android:id="@+id/editTextTextMultiLine"
+        android:id="@+id/feedbackInput"
         android:layout_width="337dp"
         android:layout_height="184dp"
+        android:layout_marginTop="16dp"
         android:background="#E4E4E4"
         android:ems="10"
         android:gravity="start|top"
@@ -44,23 +53,30 @@
         android:paddingHorizontal="12sp"
         android:paddingVertical="10sp"
         android:textSize="14sp"
-        tools:layout_editor_absoluteX="37dp"
-        tools:layout_editor_absoluteY="230dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/restaurantName" />
 
     <RatingBar
         android:id="@+id/ratingBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:layout_editor_absoluteX="85dp"
-        tools:layout_editor_absoluteY="435dp" />
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:numStars="5"
+        android:stepSize="0.5"
+        app:layout_constraintTop_toBottomOf="@+id/feedbackInput" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/postReviewBtn"
         android:layout_width="195dp"
         android:layout_height="58dp"
+        android:layout_marginTop="116dp"
         android:text="Submit"
         android:textSize="16sp"
-        tools:layout_editor_absoluteX="108dp"
-        tools:layout_editor_absoluteY="615dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ratingBar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
