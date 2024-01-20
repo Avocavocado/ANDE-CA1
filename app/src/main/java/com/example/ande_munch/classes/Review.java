@@ -1,4 +1,4 @@
-package com.example.ande_munch;
+package com.example.ande_munch.classes;
 
 public class Review {
     public String username;

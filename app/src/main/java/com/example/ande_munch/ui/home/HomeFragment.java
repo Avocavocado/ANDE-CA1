@@ -2,9 +2,11 @@ package com.example.ande_munch.ui.home;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.Manifest;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,14 +18,17 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.ande_munch.CuisineButtonAdapter;
 import com.example.ande_munch.FilterActivity;
+import com.example.ande_munch.MainActivity;
 import com.example.ande_munch.R;
-import com.example.ande_munch.Restaurant;
+import com.example.ande_munch.classes.LocationTracker;
+import com.example.ande_munch.classes.Restaurant;
 import com.example.ande_munch.RestaurantCardAdapter;
 import com.example.ande_munch.RestaurantDetails;
 import com.example.ande_munch.databinding.ExploreRestaurantsBinding;
@@ -60,6 +65,7 @@ public class HomeFragment extends Fragment {
     private String ratingFilter = "Any";
     private int distanceFilter = 0;
     private LoginMethods loginMethods = new LoginMethods();
+    private MainActivity mainActivity;
     private List<String> urls =
             Arrays.asList("bbq", "chinese", "fast_food", "hawker", "indian", "japanese", "malay", "mexican", "seafood", "thai", "western");
     private List<String> cuisines =
@@ -73,6 +79,7 @@ public class HomeFragment extends Fragment {
         View root = binding.getRoot();
 
         String email = loginMethods.getUserEmail();
+        mainActivity = (MainActivity) getActivity();
         Log.d(TAG, "Email: " + email);
         CheckAndAddUser(email);
 
@@ -112,7 +119,11 @@ public class HomeFragment extends Fragment {
                                     Callback callback = new Callback() {
                                         @Override
                                         public void onSuccess(double avgPrice, double avgRating) {
-                                            restaurants.add(new Restaurant(document, avgPrice, avgRating));
+                                            GeoPoint geopoint = document.getGeoPoint("Location");
+                                            Log.i("GPS","HomeFrag: " + mainActivity.getLatitude() + " " + mainActivity.getLongitude() + " " + geopoint.getLatitude() +  " " + geopoint.getLongitude());
+                                            Log.i("GPS", "Distance: " + getDistance(mainActivity.getLatitude(), mainActivity.getLongitude(), geopoint.getLatitude(), geopoint.getLongitude()));
+                                            double distance = getDistance(mainActivity.getLatitude(), mainActivity.getLongitude(), geopoint.getLatitude(), geopoint.getLongitude());
+                                            restaurants.add(new Restaurant(document, avgPrice, avgRating, distance));
                                             rcAdapter.notifyItemInserted(restaurants.size() - 1);
                                         }
                                     };
@@ -130,6 +141,7 @@ public class HomeFragment extends Fragment {
                                         intent.putExtra("RestaurantId", restaurant.data.getId());
                                         intent.putExtra("AvgPrice", restaurant.avgPrice);
                                         intent.putExtra("AvgRating", restaurant.avgRating);
+                                        intent.putExtra("Address", restaurant.data.getString("Address"));
                                         intent.putExtra("Desc", restaurant.data.getString("Desc"));
                                         intent.putStringArrayListExtra("Cuisine",  (ArrayList<String>) restaurant.data.get("Cuisine"));
                                         intent.putExtra("OpeningHours", (Serializable) restaurant.data.get("OpeningHours"));
@@ -223,7 +235,7 @@ public class HomeFragment extends Fragment {
 
         //DISTANCE FILTER
         if (distanceFilter != 0) {
-
+            filteredDocuments = filterByDistance(filteredDocuments);
         }
         Log.i(TAG, "SELECTED :" + selectedCuisines + " Documents No: " + filteredDocuments.size() + " Res. No: " + restaurants.size());
         return filteredDocuments;
@@ -270,6 +282,17 @@ public class HomeFragment extends Fragment {
         for (Restaurant document : restaurants) {
             int priceValue = Integer.parseInt(priceFilter.substring(1));
             if (document.avgPrice <= priceValue) {
+                filteredDocuments.add(document);
+            }
+        }
+        return filteredDocuments;
+    }
+
+    public List<Restaurant> filterByDistance(List<Restaurant> restaurants) {
+        List<Restaurant> filteredDocuments = new ArrayList<>();
+        for (Restaurant document : restaurants) {
+            double maxDistance = (double) distanceFilter / 10;
+            if (document.distance <= maxDistance) {
                 filteredDocuments.add(document);
             }
         }
@@ -333,6 +356,15 @@ public class HomeFragment extends Fragment {
 
     public interface Callback {
         void onSuccess(double result1, double result2);
+    }
+
+    public double getDistance (double lat1, double lon1, double lat2, double lon2) {
+        int r = 6371; // km
+        double p = Math.PI / 180;
+        double a = 0.5 - Math.cos((lat2 - lat1) * p) / 2
+                + Math.cos(lat1 * p) * Math.cos(lat2 * p) *
+                (1 - Math.cos((lon2 - lon1) * p)) / 2;
+        return (double) Math.round(10 * 2 * r * Math.asin(Math.sqrt(a))) / 10;
     }
 
     @Override

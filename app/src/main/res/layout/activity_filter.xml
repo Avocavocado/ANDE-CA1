@@ -8,8 +8,8 @@
     <ImageButton
         android:id="@+id/cancelFilterBtn"
         android:contentDescription="close filter"
-        android:layout_width="60sp"
-        android:layout_height="60sp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.056"
@@ -21,9 +21,9 @@
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="125dp"
+        android:layout_marginTop="144dp"
         android:text="Filters"
-        android:textSize="34sp"
+        android:textSize="28dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -130,7 +130,7 @@
 
     <SeekBar
         android:id="@+id/distanceSlider"
-        android:layout_width="370sp"
+        android:layout_width="370dp"
         android:layout_height="47dp"
         android:layout_marginTop="6dp"
         app:layout_constraintEnd_toEndOf="parent"

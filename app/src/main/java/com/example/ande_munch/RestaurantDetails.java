@@ -5,7 +5,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -15,19 +14,19 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.ande_munch.classes.Review;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -40,6 +39,7 @@ public class RestaurantDetails extends AppCompatActivity implements OnMapReadyCa
     private ReviewsAdapter rvAdapter;
     private ImageView rImage;
     private TextView desc;
+    private TextView address;
     private LinearLayout cuisines;
     private TextView rating;
     private TextView details;
@@ -59,7 +59,8 @@ public class RestaurantDetails extends AppCompatActivity implements OnMapReadyCa
         desc = findViewById(R.id.restarauntDetailsDesc);
         cuisines = findViewById(R.id.restaurantDetailsCuisines);
         rating = findViewById(R.id.restaurantDetailsRating);
-        details = findViewById(R.id.restarauntDetails);
+        details = findViewById(R.id.restaurantDetails);
+        address = findViewById(R.id.restaurantAddress);
 
         ImageButton closeDetails = findViewById(R.id.closeRestaurantDetails);
         closeDetails.setOnClickListener(new View.OnClickListener() {
@@ -84,14 +85,14 @@ public class RestaurantDetails extends AppCompatActivity implements OnMapReadyCa
         double avgRating = info.getDouble("AvgRating");
         String imageUrl = info.getString("Image");
         String descText = info.getString("Desc");
-        lat = info.getDouble("Lat");
-        lon = info.getDouble("Lon");
+        String addressText = info.getString("Address");
         ArrayList<String> cuisineArray = info.getStringArrayList("Cuisine");
         ArrayList<Object> openingHoursArray = (ArrayList<Object>) info.get("OpeningHours");
 
         restaurantName.setText(restaurantID);
         desc.setText(descText);
         rating.setText(avgRating + "★");
+        address.setText(addressText);
         Picasso.get().load(imageUrl).into(rImage);
 
         String detailsText = "";
@@ -184,9 +185,15 @@ public class RestaurantDetails extends AppCompatActivity implements OnMapReadyCa
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        Bundle info = getIntent().getExtras();
+        lat = info.getDouble("Lat");
+        lon = info.getDouble("Lon");
+        Log.i(TAG, "LATLONG: " + lat + "," + lon);
         // Add a marker in Singapore and move the camera
-        LatLng sg = new LatLng(lat, lon);
-        //mMap.addMarker(new MarkerOptions().position(sg).title("Marker in Singapore"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sg));
+        LatLng position = new LatLng(lat, lon);
+        mMap.addMarker(new MarkerOptions().position(position).title(info.getString("RestaurantId")));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(position, 16);
+        mMap.animateCamera(cameraUpdate);
     }
 }

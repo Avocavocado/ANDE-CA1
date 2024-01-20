@@ -8,7 +8,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:background="@color/bgColor">
 
     <ImageButton
         android:id="@+id/closeRestaurantDetails"
@@ -23,8 +23,8 @@
 
     <ImageView
         android:id="@+id/restaurantDetailsImage"
-        android:layout_width="350sp"
-        android:layout_height="160sp"
+        android:layout_width="350dp"
+        android:layout_height="160dp"
         android:layout_marginTop="16dp"
         android:background="#404040"
         app:layout_constraintEnd_toEndOf="parent"
@@ -39,7 +39,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="7dp"
         android:text="[RESTAURANT NAME]"
-        android:textSize="20sp"
+        android:textSize="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/restaurantDetailsImage" />
@@ -59,21 +59,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="[RESTAURANT DETAILS]"
-        android:textSize="14sp"
+        android:textSize="14dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/restaurantDetailsCuisines" />
-
-    <TextView
-        android:id="@+id/restarauntDetails"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:text="[RESTAURANT LOCATION]+[PRICE]+[OPENING HOURS]"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/restarauntDetailsDesc" />
 
     <fragment
         android:id="@+id/mapFragment"
@@ -84,7 +74,28 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.508"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/restarauntDetails" />
+        app:layout_constraintTop_toBottomOf="@+id/restarauntDetailsDesc" />
+
+    <TextView
+        android:id="@+id/restaurantAddress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="[RESTAURANT LOCATION]"
+        android:textSize="14dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/mapFragment" />
+
+    <TextView
+        android:id="@+id/restaurantDetails"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="[RESTAURANT LOCATION]+[PRICE]+[OPENING HOURS]"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/restaurantAddress" />
 
     <TextView
         android:id="@+id/textView9"
@@ -92,11 +103,11 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:text="Featured Dishes"
-        android:textSize="18sp"
+        android:textSize="18dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.1"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mapFragment" />
+        app:layout_constraintTop_toBottomOf="@+id/restaurantDetails" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/menuItems"
@@ -129,8 +140,8 @@
 
     <ImageButton
         android:id="@+id/newReview"
-        android:layout_width="40sp"
-        android:layout_height="40sp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.925"

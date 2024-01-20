@@ -2,6 +2,7 @@ package com.example.ande_munch;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +11,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
-import com.google.firebase.firestore.DocumentSnapshot;
+
+import com.example.ande_munch.classes.Restaurant;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -89,7 +91,8 @@ public class RestaurantCardAdapter extends RecyclerView.Adapter<RestaurantCardAd
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
         Restaurant item = localDataSet.get(position);
-        viewHolder.getName().setText(item.data.getId());
+        Log.i("GPS", "ResCard: " + item.distance);
+        viewHolder.getName().setText(item.data.getId() + " " + item.distance + "km");
         viewHolder.getDesc().setText(item.data.getString("Desc"));
         Picasso.get().load(item.data.getString("RestaurantImage")).into(viewHolder.getImage());
         viewHolder.setData(item);
@@ -106,7 +109,8 @@ public class RestaurantCardAdapter extends RecyclerView.Adapter<RestaurantCardAd
             int dp = (int) (0.5f * context.getResources().getDisplayMetrics().density);
             layoutParams.setMargins(0, 0, 24*dp, 0);
             textView.setPadding(26*dp, 8*dp, 26*dp, 8*dp);
-            textView.setBackgroundColor(Color.parseColor("#BBBBBB"));
+            textView.setBackgroundColor(Color.parseColor("#D7DAFF"));
+            textView.setTextColor(Color.parseColor("#53555C"));
             textView.setLayoutParams(layoutParams);
 
             viewHolder.getCuisines().addView(textView);

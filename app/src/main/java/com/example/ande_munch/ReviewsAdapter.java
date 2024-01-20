@@ -8,10 +8,9 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.firebase.firestore.DocumentSnapshot;
+import com.example.ande_munch.classes.Review;
 import com.squareup.picasso.Picasso;
 
-import java.text.DecimalFormat;
 import java.util.List;
 
 public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ViewHolder> {
@@ -61,7 +60,7 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ViewHold
         Review item = localDataSet.get(position);
         viewHolder.getUsername().setText(item.username);
         viewHolder.getFeedback().setText(item.feedback);
-        viewHolder.getRating().setText(item.rating.toString());
+        viewHolder.getRating().setText(item.rating != null ? item.rating.toString() + "★" : "");
         String image = item.profilePic;
         if (image != "") {
             Picasso.get().load(image).into(viewHolder.getProfilePic());
