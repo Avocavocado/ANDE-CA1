@@ -11,4 +11,9 @@
 
     <color name="bgColor">#FF222244</color>
     <color name="btnColor">#00FF66</color>
+    <color name="green">#00FF66</color>
+    <color name="yellow">#FFC72C</color>
+    <color name="pink">#FF00C7</color>
+    <color name="almostBlack">#30303A</color>
+
 </resources>

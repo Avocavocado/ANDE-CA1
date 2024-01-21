@@ -36,15 +36,17 @@
         android:inputType="textPersonName"
         android:paddingLeft="40dp"
         android:paddingRight="10dp"
-        android:textColorHint="#3A3A3A"
+        android:textColor="@color/almostBlack"
+        android:textColorHint="#6A6A6A"
         android:textSize="20dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
 
     <ImageButton
         android:id="@+id/filterButton"
-        android:layout_width="58dp"
+        android:layout_width="61dp"
         android:layout_height="61dp"
+        android:scaleType="centerInside"
         android:layout_marginStart="12dp"
         android:background="#E7E9FF"
         android:contentDescription="filter page button"
@@ -52,17 +54,17 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/searchText"
         app:layout_constraintTop_toTopOf="@+id/searchText"
-        app:srcCompat="@drawable/ic_dashboard_black_24dp" />
+        app:srcCompat="@drawable/filter" />
 
     <ImageView
         android:id="@+id/imageView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="16dp"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="20dp"
         app:layout_constraintStart_toStartOf="@+id/searchText"
         app:layout_constraintTop_toTopOf="@+id/searchText"
-        app:srcCompat="?android:attr/actionModeWebSearchDrawable" />
+        app:srcCompat="@drawable/search" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/cuisineBtns"
