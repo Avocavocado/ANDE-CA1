@@ -33,6 +33,9 @@ public class FilterActivity extends AppCompatActivity {
         distanceSlider = findViewById(R.id.distanceSlider);
         distanceText = findViewById(R.id.distanceText);
         saveFilterBtn = findViewById(R.id.saveFilterBtn);
+
+        priceBtns.check(R.id.Price1);
+        ratingBtns.check(R.id.Rating1);
         saveFilterBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

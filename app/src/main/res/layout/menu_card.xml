@@ -9,7 +9,8 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@color/white">
 
         <!-- Image View for the image on top -->
         <ImageView
@@ -25,6 +26,7 @@
             android:layout_below="@id/dishImage"
             android:layout_marginTop="6dp"
             android:text="Dish Name"
+            android:textColor="@color/black"
             android:paddingHorizontal="6dp"
             android:textSize="12dp" />
 
@@ -35,6 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/dishName"
             android:paddingHorizontal="6dp"
+            android:textColor="@color/black"
             android:paddingBottom="8dp"
             android:text="Dish Price"
             android:textSize="10dp" />
