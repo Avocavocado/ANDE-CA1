@@ -13,12 +13,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
@@ -164,13 +166,16 @@ public class HomeFragment extends Fragment {
         CuisineButtonAdapter cbAdapter = new CuisineButtonAdapter(requireContext(), cuisines, urls);
         cbAdapter.setOnItemClickListener(new CuisineButtonAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(String cuisineName, View view) {
+            public void onItemClick(View view, TextView cuisine) {
+                String cuisineName = cuisine.getText().toString();
                 Toast.makeText(requireContext(), "Item clicked: " + cuisineName, Toast.LENGTH_SHORT).show();
                 if (selectedCuisines.contains(cuisineName)) {
                     selectedCuisines.remove(cuisineName);
+                    cuisine.setTextColor(ContextCompat.getColor(requireContext(), R.color.almostBlack));
                     view.setBackgroundResource(R.drawable.cuisine_button_bg);
                 } else {
                     selectedCuisines.add(cuisineName);
+                    cuisine.setTextColor(ContextCompat.getColor(requireContext(), R.color.white));
                     view.setBackgroundResource(R.drawable.selected_cuisine_button_bg);
                 }
                 rcAdapter.updateData(filterRestaurants());

@@ -21,37 +21,95 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@android:drawable/ic_menu_close_clear_cancel" />
 
-    <ImageView
-        android:id="@+id/restaurantDetailsImage"
+
+    <androidx.cardview.widget.CardView
         android:layout_width="350dp"
-        android:layout_height="160dp"
-        android:layout_marginTop="16dp"
-        android:background="#404040"
+        android:layout_height="200dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/closeRestaurantDetails"
-        tools:srcCompat="@tools:sample/backgrounds/scenic" >
-    </ImageView>
+        android:layout_marginTop="30dp"
+        app:cardCornerRadius="20dp"
+        android:id="@+id/imageBar">
+
+        <ImageView
+            android:id="@+id/restaurantDetailsImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            tools:srcCompat="@tools:sample/backgrounds/scenic" >
+        </ImageView>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/OpenInfoBar"
+        android:layout_marginEnd="15dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="@+id/imageBar"
+        app:layout_constraintTop_toTopOf="@+id/imageBar"
+        android:layout_marginTop="12dp"
+        app:cardCornerRadius="10dp" >
+
+        <TextView
+            android:id="@+id/OpenInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#00FF00"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="2dp"
+            android:text="Closed"
+            android:textAlignment="center"
+            android:textColor="#FFFFFF"
+            android:textSize="16dp"
+            android:textStyle="bold" />
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/RatingCard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="12dp"
+        app:cardCornerRadius="10dp"
+        app:layout_constraintStart_toStartOf="@+id/imageBar"
+        app:layout_constraintTop_toTopOf="@+id/imageBar" >
+        <TextView
+            android:id="@+id/Rating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="2dp"
+            android:background="@color/white"
+            android:text="0.0*"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="16dp"
+            android:textStyle="bold" />
+    </androidx.cardview.widget.CardView>
 
     <TextView
         android:id="@+id/restaurantDetailsName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="7dp"
+        android:layout_marginTop="8dp"
         android:text="[RESTAURANT NAME]"
-        android:textSize="20dp"
+        android:textSize="22dp"
+        android:textStyle="bold"
+        android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/restaurantDetailsImage" />
+        app:layout_constraintTop_toBottomOf="@+id/imageBar" />
 
     <LinearLayout
         android:id="@+id/restaurantDetailsCuisines"
         android:layout_width="320dp"
         android:layout_height="26dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="10dp"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        android:gravity="center"
         app:layout_constraintTop_toBottomOf="@+id/restaurantDetailsName" />
 
     <TextView
@@ -60,6 +118,9 @@
         android:layout_height="wrap_content"
         android:text="[RESTAURANT DETAILS]"
         android:textSize="14dp"
+        android:textColor="@color/white"
+        android:layout_marginTop="10dp"
+        android:paddingHorizontal="30dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
@@ -70,7 +131,7 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="350dp"
         android:layout_height="300dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="40dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.508"
         app:layout_constraintStart_toStartOf="parent"
@@ -81,39 +142,53 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="[RESTAURANT LOCATION]"
+        android:paddingHorizontal="30dp"
         android:textSize="14dp"
+        android:layout_marginTop="6dp"
+        android:textColor="@color/almostWhite"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/mapFragment" />
 
-    <TextView
-        android:id="@+id/restaurantDetails"
+    <androidx.cardview.widget.CardView
+        android:layout_marginTop="40dp"
+        android:id="@+id/OpeningHoursCard"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:text="[RESTAURANT LOCATION]+[PRICE]+[OPENING HOURS]"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/restaurantAddress" />
+        app:layout_constraintTop_toBottomOf="@+id/restaurantAddress"
+        app:cardBackgroundColor="@color/blueGrey"
+        app:cardCornerRadius="20dp">
+    <TableLayout
+        android:id="@+id/OpeningHours"
+        android:background="@color/blueGrey"
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
+        android:stretchColumns="*"
+        android:paddingHorizontal="30dp"
+        android:paddingTop="16dp">
+    </TableLayout>
+    </androidx.cardview.widget.CardView>
 
     <TextView
         android:id="@+id/textView9"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="30dp"
         android:text="Featured Dishes"
+        android:textColor="@color/white"
         android:textSize="18dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.1"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/restaurantDetails" />
+        app:layout_constraintTop_toBottomOf="@+id/OpeningHoursCard" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/menuItems"
         android:layout_width="370dp"
-        android:layout_height="135dp"
-        android:layout_marginTop="4dp"
+        android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.487"
         app:layout_constraintStart_toStartOf="parent"
@@ -124,9 +199,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="28dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="40dp"
         android:text="Reviews"
-        android:textSize="18sp"
+        android:textSize="18dp"
+        android:textColor="@color/white"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/menuItems" />
 
@@ -142,26 +218,13 @@
         android:id="@+id/newReview"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.925"
         app:layout_constraintStart_toEndOf="@+id/textView10"
         app:layout_constraintTop_toBottomOf="@+id/menuItems"
         app:srcCompat="?android:attr/listChoiceIndicatorMultiple" />
 
-    <TextView
-        android:id="@+id/restaurantDetailsRating"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="13dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="297dp"
-        android:background="#FFFFFF"
-        android:text="Rating"
-        android:textColor="#000000"
-        app:layout_constraintEnd_toEndOf="@+id/restaurantDetailsImage"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="@+id/restaurantDetailsImage"
-        app:layout_constraintTop_toTopOf="@+id/restaurantDetailsImage" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
