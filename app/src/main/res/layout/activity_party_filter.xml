@@ -181,6 +181,7 @@
         <!-- Button 1 -->
         <com.google.android.material.button.MaterialButton
             style="?attr/materialButtonOutlinedStyle"
+            android:id="@+id/toggleCusineBtn1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -192,6 +193,7 @@
         <!-- Button 2 -->
         <com.google.android.material.button.MaterialButton
             style="?attr/materialButtonOutlinedStyle"
+            android:id="@+id/toggleCusineBtn2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -204,6 +206,7 @@
         <!-- Button 3 -->
         <com.google.android.material.button.MaterialButton
             style="?attr/materialButtonOutlinedStyle"
+            android:id="@+id/toggleCusineBtn3"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -227,6 +230,7 @@
         <!-- Button 1 -->
         <com.google.android.material.button.MaterialButton
             style="?attr/materialButtonOutlinedStyle"
+            android:id="@+id/toggleCusineBtn4"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -238,6 +242,7 @@
         <!-- Button 2 -->
         <com.google.android.material.button.MaterialButton
             style="?attr/materialButtonOutlinedStyle"
+            android:id="@+id/toggleCusineBtn5"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -250,6 +255,7 @@
         <!-- Button 3 -->
         <com.google.android.material.button.MaterialButton
             style="?attr/materialButtonOutlinedStyle"
+            android:id="@+id/toggleCusineBtn6"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -272,6 +278,7 @@
         <!-- Button 1 -->
         <com.google.android.material.button.MaterialButton
             style="?attr/materialButtonOutlinedStyle"
+            android:id="@+id/toggleCusineBtn7"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -283,6 +290,7 @@
         <!-- Button 2 -->
         <com.google.android.material.button.MaterialButton
             style="?attr/materialButtonOutlinedStyle"
+            android:id="@+id/toggleCusineBtn8"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -295,6 +303,7 @@
         <!-- Button 3 -->
         <com.google.android.material.button.MaterialButton
             style="?attr/materialButtonOutlinedStyle"
+            android:id="@+id/toggleCusineBtn9"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"

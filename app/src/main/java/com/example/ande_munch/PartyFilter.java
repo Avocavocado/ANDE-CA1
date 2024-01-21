@@ -95,40 +95,14 @@ public class PartyFilter extends AppCompatActivity {
     }
 
     private void createCuisineButtons() {
-        // Calculate the number of rows needed
-        int numRows = (int) Math.ceil(cuisines.size() / 3.0);
-        Log.i("numRows", "Number of rows" + numRows);
-        int buttonIndex = 0;
 
-        for (int row = 0; row < numRows; row++) {
-            LinearLayout rowLayout = new LinearLayout(this);
-            rowLayout.setOrientation(LinearLayout.HORIZONTAL);
-            rowLayout.setLayoutParams(new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT));
 
-            for (int col = 0; col < 3; col++) {
-                if (buttonIndex < cuisines.size()) {
-                    Log.i("Test", "Test: " + col);
-                    MaterialButton button = new MaterialButton(this, null);
-                    button.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
-                    button.setText(cuisines.get(buttonIndex));
-                    button.setId(View.generateViewId()); // Generate a unique ID for the button
-                    button.setOnClickListener(view -> {
-                        // Handle the click event
-                        button.setChecked(!button.isChecked());
-                    });
-                    rowLayout.addView(button);
-                    buttonIndex++;
-                }
-            }
-
-            // Add the row to the ToggleGroup
-            toggleGroupCuisine.addView(rowLayout);
+        for (int num = 0; num < cuisines.toArray().length; num++) {
+            Log.d("Length", "length:" + cuisines.toArray().length);
         }
+    }
 
-    // ... existing code ...
-}
+
     @Override
     protected void onStart() {
         super.onStart();
