@@ -31,4 +31,7 @@
 
 
     <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyBwX0rW5nkKzcKetn9vZETiJaQnoPdaoEk</string>
+    <string name="bbq_cuisine_title">BBQ</string>
+    <string name="fastFood_cuisine_title">Fast Food</string>
+    <string name="thai_cuisine_title">Thai</string>
 </resources>
