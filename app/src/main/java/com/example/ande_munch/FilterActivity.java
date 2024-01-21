@@ -34,8 +34,19 @@ public class FilterActivity extends AppCompatActivity {
         distanceText = findViewById(R.id.distanceText);
         saveFilterBtn = findViewById(R.id.saveFilterBtn);
 
-        priceBtns.check(R.id.Price1);
-        ratingBtns.check(R.id.Rating1);
+        SharedPreferences preferences = getSharedPreferences("Filters", MODE_PRIVATE);
+        boolean codeExecuted = preferences.getBoolean("codeExecuted", false);
+        if (!codeExecuted) {
+            // Save filter inputs
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putInt("Price", R.id.Price1);
+            editor.putInt("Rating", R.id.Rating1);
+            editor.putInt("Distance", 0);
+            editor.putBoolean("codeExecuted", true);
+            editor.apply();
+        }
+
+
         saveFilterBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -90,12 +101,19 @@ public class FilterActivity extends AppCompatActivity {
         Log.i(TAG, "HERE");
         SharedPreferences preferences = getSharedPreferences("Filters", MODE_PRIVATE);
 
-        int savedPrice = preferences.getInt("Price", R.id.Price1);
-        int savedRating = preferences.getInt("Rating", R.id.Rating1);
+        int savedPrice = preferences.getInt("Price", -1); // Use -1 as an invalid default value
+        int savedRating = preferences.getInt("Rating", -1); // Use -1 as an invalid default value
         int savedDistance = preferences.getInt("Distance", 0);
 
-        priceBtns.check(savedPrice);
-        ratingBtns.check(savedRating);
+        Log.i(TAG, "Saved " + savedPrice);
+        // Check if the saved values are valid
+        if (savedPrice != -1) {
+            priceBtns.check(savedPrice);
+        }
+
+        if (savedRating != -1) {
+            ratingBtns.check(savedRating);
+        }
         distanceSlider.setProgress(savedDistance);
 
         updateDistance();

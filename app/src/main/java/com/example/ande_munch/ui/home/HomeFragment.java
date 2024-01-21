@@ -142,6 +142,7 @@ public class HomeFragment extends Fragment {
                                         intent.putExtra("Lon", geopoint.getLongitude());
                                         intent.putExtra("RestaurantId", restaurant.data.getId());
                                         intent.putExtra("AvgPrice", restaurant.avgPrice);
+                                        intent.putExtra("Distance", restaurant.distance);
                                         intent.putExtra("AvgRating", restaurant.avgRating);
                                         intent.putExtra("Address", restaurant.data.getString("Address"));
                                         intent.putExtra("Desc", restaurant.data.getString("Desc"));
