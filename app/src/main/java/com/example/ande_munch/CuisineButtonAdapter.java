@@ -1,6 +1,7 @@
 package com.example.ande_munch;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Outline;
 import android.graphics.drawable.ClipDrawable;
 import android.graphics.drawable.Drawable;
@@ -28,7 +29,7 @@ public class CuisineButtonAdapter extends RecyclerView.Adapter<CuisineButtonAdap
     private static OnItemClickListener onItemClickListener;
 
     public interface OnItemClickListener {
-        void onItemClick(String cuisineName, View v);
+        void onItemClick(View v, TextView cuisineName);
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -45,7 +46,7 @@ public class CuisineButtonAdapter extends RecyclerView.Adapter<CuisineButtonAdap
                 @Override
                 public void onClick(View v) {
                     if (onItemClickListener != null) {
-                        onItemClickListener.onItemClick(CuisineName.getText().toString(), v);
+                        onItemClickListener.onItemClick(v, CuisineName);
                     }
                 }
             });

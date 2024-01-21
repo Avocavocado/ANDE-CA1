@@ -2,32 +2,42 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="130dp"
-    android:layout_height="wrap_content"
+    android:layout_height="150dp"
     app:cardCornerRadius="10dp"
-    app:cardElevation="4dp"
-    android:layout_marginHorizontal="10dp">
+    app:cardBackgroundColor="@color/white"
+    android:layout_marginEnd="12dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white" >
+
+    <ImageView
+        android:id="@+id/dishImage"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white">
+        android:background="@color/white"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dishImage"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:paddingHorizontal="6dp">
 
-        <!-- Image View for the image on top -->
-        <ImageView
-            android:id="@+id/dishImage"
-            android:layout_width="match_parent"
-            android:layout_height="80dp" />
-
-        <!-- Title TextView below the image -->
         <TextView
             android:id="@+id/dishName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/dishImage"
             android:layout_marginTop="6dp"
             android:text="Dish Name"
             android:textColor="@color/black"
-            android:paddingHorizontal="6dp"
+            android:paddingHorizontal="4dp"
             android:textSize="12dp" />
 
         <!-- Price TextView below the title -->
@@ -42,5 +52,6 @@
             android:text="Dish Price"
             android:textSize="10dp" />
     </RelativeLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.cardview.widget.CardView>

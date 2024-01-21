@@ -159,7 +159,7 @@ public class RestaurantCardAdapter extends RecyclerView.Adapter<RestaurantCardAd
         else {
             viewHolder.getOpenInfo().setBackgroundColor(Color.parseColor("#30303A"));
             Map<String,String> tomorrowOH = (Map<String, String>) openingHours.get(dayOfWeek != 6 ? dayOfWeek+1 : 0);
-            LocalTime tomorrowOpeningTime = LocalTime.parse(tomorrowOH.get("Open"));
+            LocalTime tomorrowOpeningTime = LocalTime.parse(tomorrowOH.get("Open"), DateTimeFormatter.ofPattern("H:mm"));
             viewHolder.getOpenInfo().setText("Closed til " + tomorrowOpeningTime.format(DateTimeFormatter.ofPattern("hh:mm a")));
         }
         //Log.i("OpenInfo", openingTime + "-" + closingTime);
