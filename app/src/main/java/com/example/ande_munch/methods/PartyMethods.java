@@ -5,6 +5,7 @@ import android.telecom.Call;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -175,6 +176,42 @@ public class PartyMethods {
                     callback.onFailure(e); // Handle the failure case
                 });
     }
+
+    public void updatePartyUserFilters(String partyCode, String email, Map<String, Object> filtersToUpdate, Callback callback) {
+        // Reference to the user's document in the "Users" collection of the specified party
+        DocumentReference userDocRef = db.collection("Parties").document(partyCode)
+                .collection("Users").document(email);
+        userDocRef.update(filtersToUpdate)
+                .addOnSuccessListener(aVoid -> {
+                    // After updating, retrieve the user details
+                    userDocRef.get()
+                            .addOnSuccessListener(documentSnapshot -> {
+                                if (documentSnapshot.exists()) {
+                                    Map<String, Object> userDetails = documentSnapshot.getData();
+                                    userDetails.put("email", email);
+
+                                    List<Map<String, Object>> filtersList = new ArrayList<>();
+                                    filtersList.add(userDetails);
+
+                                    Log.d("updatePartyUserFilters", "Filters updated and User Details fetched: " + filtersList);
+                                    callback.onUserDataFetched(filtersList);
+                                } else {
+                                    Log.d("updatePartyUserFilters", "User document doesn't exist for email: " + email);
+                                    callback.onFailure(new Exception("User document not found."));
+                                }
+                            })
+                            .addOnFailureListener(e -> {
+                                Log.d("updatePartyUserFilters", "Error getting user details: " + e.getMessage());
+                                callback.onFailure(e); // Handle the failure case
+                            });
+                })
+                .addOnFailureListener(e -> {
+                    Log.d("updatePartyUserFilters", "Error updating filters: " + e.getMessage());
+                    callback.onFailure(e); // Handle the failure case
+                });
+    }
+
+
 
 
     // Helper method to show a toast message

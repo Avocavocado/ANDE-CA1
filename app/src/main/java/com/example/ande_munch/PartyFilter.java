@@ -20,13 +20,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.ande_munch.methods.PartyMethods;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 public class PartyFilter extends AppCompatActivity {
@@ -37,19 +42,30 @@ public class PartyFilter extends AppCompatActivity {
     private static SeekBar distanceSlider;
     private TextView distanceText;
     private Button saveFilterBtn;
+    PartyMethods partyMethods = new PartyMethods();
     private List<String> cuisines =
-            Arrays.asList("BBQ", "Chinese", "Fast Food", "Hawker", "Indian", "Japanese", "Mexican", "Seafood", "Thai", "Western", "Malay");
+            Arrays.asList("BBQ", "Chinese", "Fast Food", "Hawker", "Indian", "Japanese", "Mexican", "Seafood", "Thai", "Western", "Malay", "Korean");
+    private MaterialButtonToggleGroup toggleGroup1;
+    private MaterialButtonToggleGroup toggleGroup2;
+    private MaterialButtonToggleGroup toggleGroup3;
+    private MaterialButtonToggleGroup toggleGroup4;
+    private MaterialButtonToggleGroup toggleGroup;
+    List<MaterialButton> checkedButtons = new ArrayList<>();
+    List<String> selectedCuisines = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_party_filter);
-
         priceBtns = findViewById(R.id.priceBtns);
         ratingBtns = findViewById(R.id.ratingBtns);
         distanceSlider = findViewById(R.id.distanceSlider);
         distanceText = findViewById(R.id.distanceText);
         saveFilterBtn = findViewById(R.id.saveFilterBtn);
+        toggleGroup1 = findViewById(R.id.toggle_button_group1);
+        toggleGroup2 = findViewById(R.id.toggle_button_group2);
+        toggleGroup3 = findViewById(R.id.toggle_button_group3);
+        toggleGroup4 = findViewById(R.id.toggle_button_group4);
         saveFilterBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -59,11 +75,17 @@ public class PartyFilter extends AppCompatActivity {
                 int price = priceBtns.getCheckedRadioButtonId();
                 int rating = ratingBtns.getCheckedRadioButtonId();
                 int distance = distanceSlider.getProgress();
-
+                getCuisineSelected();
                 // Save filter inputs
                 editor.putInt("Price", price);
                 editor.putInt("Rating", rating);
                 editor.putInt("Distance", distance);
+                Set<String> previousCuisines = preferences.getStringSet("SelectedCuisines", new HashSet<>());
+                selectedCuisines.clear(); // Clear the list
+                selectedCuisines.addAll(previousCuisines); // Add the previously selected cuisines
+                getCuisineSelected(); // Add the newly selected cuisines
+
+                editor.putStringSet("SelectedCuisines", new HashSet<>(selectedCuisines));
                 editor.apply();
 
                 //Send filter data back to explore restaurants page
@@ -71,8 +93,10 @@ public class PartyFilter extends AppCompatActivity {
                 resultIntent.putExtra("Price", ((RadioButton) findViewById(price)).getText());
                 resultIntent.putExtra("Rating", ((RadioButton) findViewById(rating)).getText());
                 resultIntent.putExtra("Distance", distance);
+                resultIntent.putStringArrayListExtra("SelectedCuisines", new ArrayList<>(selectedCuisines));
                 setResult(Activity.RESULT_OK, resultIntent);
                 finish();
+
             }
         });
 
@@ -90,18 +114,61 @@ public class PartyFilter extends AppCompatActivity {
                 updateDistance();
             }
         });
-        // toggleGroupCuisine = findViewById(R.id.btnGroupCuisine);
-        createCuisineButtons();
     }
 
     private void createCuisineButtons() {
+        for (int num = 0; num < cuisines.size(); num++) {
+            int buttonId = getResources().getIdentifier("toggleCuisineBtn" + (num + 1), "id", getPackageName());
+            if (buttonId != 0) {
+                MaterialButton materialButton = findViewById(buttonId);
+                materialButton.setText(cuisines.get(num));
 
+                // Check if the cuisine was previously selected and update the button's state
 
-        for (int num = 0; num < cuisines.toArray().length; num++) {
-            Log.d("Length", "length:" + cuisines.toArray().length);
+                if (selectedCuisines.contains(cuisines.get(num))) {
+                    materialButton.setChecked(true);
+                }
+            }
         }
     }
 
+    private void getCuisineSelected() {
+        checkedButtons.clear(); // Clear the list before adding selected buttons
+        selectedCuisines.clear();
+        for (int num = 0; num < cuisines.size(); num++) {
+            int buttonId = getResources().getIdentifier("toggleCuisineBtn" + (num + 1), "id", getPackageName());
+            if (buttonId != 0) {
+                MaterialButton materialButton = findViewById(buttonId);
+                // Check if the cuisine was previously selected and update the button's state
+                if (selectedCuisines.contains(cuisines.get(num))){
+                    materialButton.setChecked(true);
+                }
+            }
+        }
+        // Add checked buttons to the 'checkedButtons' list for each toggle group
+        addCheckedButtonsToList(toggleGroup1);
+        addCheckedButtonsToList(toggleGroup2);
+        addCheckedButtonsToList(toggleGroup3);
+        addCheckedButtonsToList(toggleGroup4);
+
+        for (MaterialButton materialButton : checkedButtons) {
+            String buttonText = materialButton.getText().toString();
+            selectedCuisines.add(buttonText);
+        }
+        Log.d("Selected Cuisines","Selected Cuisines: "+selectedCuisines);
+    }
+
+    private void addCheckedButtonsToList(MaterialButtonToggleGroup toggleGroup) {
+        for (int i = 0; i < toggleGroup.getChildCount(); i++) {
+            View childView = toggleGroup.getChildAt(i);
+            if (childView instanceof MaterialButton) {
+                MaterialButton materialButton = (MaterialButton) childView;
+                if (materialButton.isChecked()) {
+                    checkedButtons.add(materialButton);
+                }
+            }
+        }
+    }
 
     @Override
     protected void onStart() {
@@ -112,12 +179,15 @@ public class PartyFilter extends AppCompatActivity {
         int savedPrice = preferences.getInt("Price", R.id.Price1);
         int savedRating = preferences.getInt("Rating", R.id.Rating1);
         int savedDistance = preferences.getInt("Distance", 0);
+        Set<String> savedCuisines = preferences.getStringSet("SelectedCuisines", new HashSet<>());
 
         priceBtns.check(savedPrice);
         ratingBtns.check(savedRating);
         distanceSlider.setProgress(savedDistance);
+        selectedCuisines.addAll(savedCuisines);
 
         updateDistance();
+        createCuisineButtons();
     }
 
     public void updateDistance() {

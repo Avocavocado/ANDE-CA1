@@ -1,5 +1,6 @@
 package com.example.ande_munch.ui.dashboard;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Editable;
@@ -9,6 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.util.Log;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
@@ -55,7 +58,7 @@ public class DashboardFragment extends Fragment {
     PartyMethods partyMethods = new PartyMethods();
 
     String userEmail = currentUser.getEmail();
-
+    String userLoggedInPartyCode;
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         DashboardViewModel dashboardViewModel = new ViewModelProvider(this).get(DashboardViewModel.class);
 
@@ -75,7 +78,7 @@ public class DashboardFragment extends Fragment {
                     if (partyCodeExists) {
                         // Party code exists
                         System.out.println("Party found!");
-                        navigateToDisplayParty();
+                        navigateToDisplayParty(userEmail,dialogCode);
                         // Call the method with the correct parameters
                         partyMethods.addUserToParty(userEmail, dialogCode);
                         partyMethods.getUserFilterDetails(dialogCode, new Callback() {
@@ -111,7 +114,7 @@ public class DashboardFragment extends Fragment {
 
         binding.createPartyBtn.setOnClickListener(view -> {
             initCreateParty();
-            navigateToDisplayParty();
+            navigateToDisplayParty(userEmail,userLoggedInPartyCode);
         });
 
         // final TextView textView = binding.textDashboard;
@@ -131,8 +134,10 @@ public class DashboardFragment extends Fragment {
         startActivity(intent);
     }
 
-    public void navigateToDisplayParty() {
+    public void navigateToDisplayParty(String email, String dialogCode) {
         Intent intent = new Intent(getActivity(), DisplayParty.class);
+        intent.putExtra("email", email);
+        intent.putExtra("dialogCode", dialogCode);
         startActivity(intent);
     }
 
