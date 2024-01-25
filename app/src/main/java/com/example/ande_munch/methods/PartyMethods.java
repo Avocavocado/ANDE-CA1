@@ -152,7 +152,17 @@ public class PartyMethods {
             }
 
             @Override
+            public void onUserDataFetched(Map<String, Object> userDetails) {
+
+            }
+
+            @Override
             public void onFailure(Exception e) {
+
+            }
+
+            @Override
+            public void onSuccess() {
 
             }
         });

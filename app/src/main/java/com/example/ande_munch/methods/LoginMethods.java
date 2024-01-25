@@ -88,7 +88,7 @@ public class LoginMethods {
 
         // Adding user fields to the datastore
         Map<String, Object> newUserMap = new HashMap<>();
-        newUserMap.put("Diet", "");
+        newUserMap.put("Diet", "None");
         newUserMap.put("Password", "");
         newUserMap.put("ProfileImage", "");
         newUserMap.put("Username", "");

@@ -92,8 +92,18 @@ public class DisplayParty extends AppCompatActivity {
                         }
 
                         @Override
+                        public void onUserDataFetched(Map<String, Object> userDetails) {
+                            // Handle user data fetched result if needed
+                        }
+
+                        @Override
                         public void onFailure(Exception e) {
                             // Handle failure if needed
+                        }
+
+                        @Override
+                        public void onSuccess() {
+
                         }
                     });
                 }

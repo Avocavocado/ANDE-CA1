@@ -18,5 +18,6 @@
     <color name="almostBlack">#30303A</color>
     <color name="blueGrey">#3A3A6A</color>
     <color name="grey">#AAAACC</color>
+    <color name="backBtn">#3A4077</color>
 
 </resources>
