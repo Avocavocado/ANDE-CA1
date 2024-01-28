@@ -87,13 +87,14 @@ public class ProfilePage extends AppCompatActivity{
                 binding.editTextPassword.setSelection(binding.editTextPassword.getText().length());
             }
         });
-        Button backBtn = findViewById(R.id.backBtn);
+        ImageView backBtn = findViewById(R.id.backBtn);
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
             }
         });
+
     }
 
     public void setUserProfileDetails(Map<String, Object> userDetails){
