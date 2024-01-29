@@ -82,8 +82,6 @@ public class HomeFragment extends Fragment {
 
         String email = loginMethods.getUserEmail();
         mainActivity = (MainActivity) getActivity();
-        Log.d(TAG, "Email: " + email);
-        CheckAndAddUser(email);
 
         searchText = (EditText) root.findViewById(R.id.searchText);
         searchText.addTextChangedListener(new TextWatcher() {
@@ -194,21 +192,6 @@ public class HomeFragment extends Fragment {
         });
 
         return root;
-    }
-
-    public void CheckAndAddUser(String email) {
-        db = FirebaseFirestore.getInstance();
-        loginMethods.checkDbForEmail(email).thenAccept(userExists -> {
-            if (!userExists) {
-                Log.d(TAG, "User email doesn't exist");
-                loginMethods.createUser(email);
-            } else {
-                Log.d(TAG, "User email exists");
-            }
-        }).exceptionally(e -> {
-            Log.e(TAG, "Error checking user in database: " + e);
-            return null;
-        });
     }
 
     public List<Restaurant> filterRestaurants() {

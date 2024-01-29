@@ -82,16 +82,16 @@ public class LoginMethods {
     }
 
     // Method to create a new user record if one is not yet available
-    public void createUser(String email) {
+    public void createUser(String email, String password, String username) {
         db = FirebaseFirestore.getInstance();
         DocumentReference newUserRef = db.collection("Users").document(email);
 
         // Adding user fields to the datastore
         Map<String, Object> newUserMap = new HashMap<>();
         newUserMap.put("Diet", "None");
-        newUserMap.put("Password", "");
+        newUserMap.put("Password", password);
         newUserMap.put("ProfileImage", "https://firebasestorage.googleapis.com/v0/b/munch-e31d6.appspot.com/o/UserImages%2FDefault_Profile.jpeg?alt=media");
-        newUserMap.put("Username", "");
+        newUserMap.put("Username", username);
 
         newUserRef.set(newUserMap)
                 .addOnSuccessListener(aVoid -> System.out.println("User successfully created!"))
