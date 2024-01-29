@@ -21,6 +21,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
@@ -51,34 +53,7 @@ public class ProfilePage extends AppCompatActivity{
         binding.logoutBtn.setOnClickListener(v -> signOutAndQuit());
         binding.updateBtn.setOnClickListener(v -> updateProfile());
 
-        profileMethods.getUserProfileDetails(new Callback() {
-            @Override
-            public void onUserChecked(boolean userExists) {
-
-            }
-
-            @Override
-            public void onUserDataFetched(List<Map<String, Object>> usersList) {
-
-            }
-
-            @Override
-            public void onUserDataFetched(Map<String, Object> userDetails) {
-                ProfilePage.this.userDetails = userDetails;
-                setUserProfileDetails(userDetails);
-            }
-
-            @Override
-            public void onFailure(Exception e) {
-                Log.e("ProfilePage", "Error fetching user details", e);
-                // Handle the failure, like showing a toast or a dialog
-            }
-
-            @Override
-            public void onSuccess() {
-
-            }
-        });
+        loadUserProfile();
 
         ImageView imageViewTogglePassword = findViewById(R.id.imageViewTogglePassword);
         imageViewTogglePassword.setOnClickListener(new View.OnClickListener() {
@@ -240,5 +215,41 @@ public class ProfilePage extends AppCompatActivity{
                     Log.d("updateUserProfile", "Error updating user profile: " + e.getMessage());
                      Toast.makeText(ProfilePage.this, "Failed to update profile image.", Toast.LENGTH_SHORT).show();
                 });
+    }
+
+    protected void onResume() {
+        super.onResume();
+        loadUserProfile();
+    }
+
+    private void loadUserProfile(){
+        profileMethods.getUserProfileDetails(new Callback() {
+            @Override
+            public void onUserChecked(boolean userExists) {
+
+            }
+
+            @Override
+            public void onUserDataFetched(List<Map<String, Object>> usersList) {
+
+            }
+
+            @Override
+            public void onUserDataFetched(Map<String, Object> userDetails) {
+                ProfilePage.this.userDetails = userDetails;
+                setUserProfileDetails(userDetails);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Log.e("ProfilePage", "Error fetching user details", e);
+                // Handle the failure, like showing a toast or a dialog
+            }
+
+            @Override
+            public void onSuccess() {
+
+            }
+        });
     }
 }
