@@ -28,10 +28,25 @@
     <string name="mexican_cuisine_title">Mexican</string>
     <string name="Italian_cuisine_title">Italian</string>
     <string name="cake_cuisine_title">Cake</string>
-
-
-    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyBwX0rW5nkKzcKetn9vZETiJaQnoPdaoEk</string>
     <string name="bbq_cuisine_title">BBQ</string>
     <string name="fastFood_cuisine_title">Fast Food</string>
     <string name="thai_cuisine_title">Thai</string>
+
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyBwX0rW5nkKzcKetn9vZETiJaQnoPdaoEk</string>
+
+    <!-- Profile Page -->
+    <string-array name="dietary_options">
+        <item>None</item>
+        <item>Vegetarian</item>
+        <item>Vegan</item>
+    </string-array>
+    <string name="profile_image">Profile Image</string>
+    <string name="username">Username</string>
+    <string name="e_mail">E-mail</string>
+    <string name="password">Password</string>
+    <string name="dietary_restrictions">Dietary Restrictions</string>
+    <string name="update">Update</string>
+    <string name="logout">Logout</string>
+    <string name="back">&lt;</string>
+    <string name="description">Description</string>
 </resources>

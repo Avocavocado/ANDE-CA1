@@ -8,5 +8,9 @@ public interface Callback {
 
     void onUserDataFetched(List<Map<String, Object>> usersList);
 
+    void onUserDataFetched(Map<String, Object> userDetails);
+
     void onFailure(Exception e);
+
+    void onSuccess();
 }

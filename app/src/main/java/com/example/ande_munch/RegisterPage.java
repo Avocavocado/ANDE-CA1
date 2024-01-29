@@ -17,7 +17,7 @@ public class RegisterPage extends AppCompatActivity {
     private FirebaseAuth mAuth;
 
     // Declare the EditText attributes here
-    private EditText fullNameInput, emailInput, passwordInput;
+    private EditText usernameInput, emailInput, passwordInput;
     private Button signUpButton;
 
     private static final String TAG = "RegisterPage"; // TAG for logging
@@ -31,18 +31,18 @@ public class RegisterPage extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
 
         // Initialize the EditText and Button attributes
-        fullNameInput = findViewById(R.id.fullNameInput);
+        usernameInput = findViewById(R.id.fullNameInput);
         emailInput = findViewById(R.id.emailInput);
         passwordInput = findViewById(R.id.passwordInput);
         signUpButton = findViewById(R.id.signUpButton);
 
         signUpButton.setOnClickListener(v -> {
-            String fullName, email, password;
-            fullName = fullNameInput.getText().toString().trim();
+            String username, email, password;
+            username = usernameInput.getText().toString().trim();
             email = emailInput.getText().toString().trim();
             password = passwordInput.getText().toString().trim();
 
-            if (TextUtils.isEmpty(fullName) || TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
+            if (TextUtils.isEmpty(username) || TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
                 Toast.makeText(RegisterPage.this, "Please fill in all the fields", Toast.LENGTH_SHORT).show();
                 return;
             } else {

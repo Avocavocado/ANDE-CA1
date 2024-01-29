@@ -112,52 +112,52 @@ public class HomeFragment extends Fragment {
         db.collection("Restaurants")
                 .get()
                 .addOnCompleteListener(getRestaurantsTask -> {
-                            if (getRestaurantsTask.isSuccessful()) {
-                                for (DocumentSnapshot document : getRestaurantsTask.getResult()) {
-                                    DocumentReference restaurantReference = document.getReference();
-                                    CollectionReference menu = restaurantReference.collection("Menu");
-                                    CollectionReference reviews = restaurantReference.collection("Reviews");
+                    if (getRestaurantsTask.isSuccessful()) {
+                        for (DocumentSnapshot document : getRestaurantsTask.getResult()) {
+                            DocumentReference restaurantReference = document.getReference();
+                            CollectionReference menu = restaurantReference.collection("Menu");
+                            CollectionReference reviews = restaurantReference.collection("Reviews");
 
-                                    Callback callback = new Callback() {
-                                        @Override
-                                        public void onSuccess(double avgPrice, double avgRating) {
-                                            GeoPoint geopoint = document.getGeoPoint("Location");
-                                            Log.i("GPS","HomeFrag: " + mainActivity.getLatitude() + " " + mainActivity.getLongitude() + " " + geopoint.getLatitude() +  " " + geopoint.getLongitude());
-                                            Log.i("GPS", "Distance: " + getDistance(mainActivity.getLatitude(), mainActivity.getLongitude(), geopoint.getLatitude(), geopoint.getLongitude()));
-                                            double distance = getDistance(mainActivity.getLatitude(), mainActivity.getLongitude(), geopoint.getLatitude(), geopoint.getLongitude());
-                                            restaurants.add(new Restaurant(document, avgPrice, avgRating, distance));
-                                            rcAdapter.notifyItemInserted(restaurants.size() - 1);
-                                        }
-                                    };
-
-                                    getMenuAndReviewData1(menu, reviews, callback);
+                            Callback callback = new Callback() {
+                                @Override
+                                public void onSuccess(double avgPrice, double avgRating) {
+                                    GeoPoint geopoint = document.getGeoPoint("Location");
+                                    Log.i("GPS","HomeFrag: " + mainActivity.getLatitude() + " " + mainActivity.getLongitude() + " " + geopoint.getLatitude() +  " " + geopoint.getLongitude());
+                                    Log.i("GPS", "Distance: " + getDistance(mainActivity.getLatitude(), mainActivity.getLongitude(), geopoint.getLatitude(), geopoint.getLongitude()));
+                                    double distance = getDistance(mainActivity.getLatitude(), mainActivity.getLongitude(), geopoint.getLatitude(), geopoint.getLongitude());
+                                    restaurants.add(new Restaurant(document, avgPrice, avgRating, distance));
+                                    rcAdapter.notifyItemInserted(restaurants.size() - 1);
                                 }
-                                rcAdapter = new RestaurantCardAdapter(getContext(), restaurants);
-                                rcAdapter.setOnItemClickListener(new RestaurantCardAdapter.OnItemClickListener() {
-                                    @Override
-                                    public void onItemClick(Restaurant restaurant) {
-                                        Intent intent = new Intent(requireActivity(), RestaurantDetails.class);
-                                        GeoPoint geopoint = restaurant.data.getGeoPoint("Location");
-                                        intent.putExtra("Lat", geopoint.getLatitude());
-                                        intent.putExtra("Lon", geopoint.getLongitude());
-                                        intent.putExtra("RestaurantId", restaurant.data.getId());
-                                        intent.putExtra("AvgPrice", restaurant.avgPrice);
-                                        intent.putExtra("Distance", restaurant.distance);
-                                        intent.putExtra("AvgRating", restaurant.avgRating);
-                                        intent.putExtra("Address", restaurant.data.getString("Address"));
-                                        intent.putExtra("Desc", restaurant.data.getString("Desc"));
-                                        intent.putStringArrayListExtra("Cuisine",  (ArrayList<String>) restaurant.data.get("Cuisine"));
-                                        intent.putExtra("OpeningHours", (Serializable) restaurant.data.get("OpeningHours"));
-                                        intent.putExtra("Image", restaurant.data.getString("RestaurantImage"));
-                                        startActivity(intent);
-                                    }
-                                });
-                                RecyclerView resCards = root.findViewById(R.id.RestaurantCards);
-                                LinearLayoutManager rcLayoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
-                                resCards.setLayoutManager(rcLayoutManager);
-                                resCards.setAdapter(rcAdapter);
+                            };
+
+                            getMenuAndReviewData1(menu, reviews, callback);
+                        }
+                        rcAdapter = new RestaurantCardAdapter(getContext(), restaurants);
+                        rcAdapter.setOnItemClickListener(new RestaurantCardAdapter.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(Restaurant restaurant) {
+                                Intent intent = new Intent(requireActivity(), RestaurantDetails.class);
+                                GeoPoint geopoint = restaurant.data.getGeoPoint("Location");
+                                intent.putExtra("Lat", geopoint.getLatitude());
+                                intent.putExtra("Lon", geopoint.getLongitude());
+                                intent.putExtra("RestaurantId", restaurant.data.getId());
+                                intent.putExtra("AvgPrice", restaurant.avgPrice);
+                                intent.putExtra("Distance", restaurant.distance);
+                                intent.putExtra("AvgRating", restaurant.avgRating);
+                                intent.putExtra("Address", restaurant.data.getString("Address"));
+                                intent.putExtra("Desc", restaurant.data.getString("Desc"));
+                                intent.putStringArrayListExtra("Cuisine",  (ArrayList<String>) restaurant.data.get("Cuisine"));
+                                intent.putExtra("OpeningHours", (Serializable) restaurant.data.get("OpeningHours"));
+                                intent.putExtra("Image", restaurant.data.getString("RestaurantImage"));
+                                startActivity(intent);
                             }
-                        })
+                        });
+                        RecyclerView resCards = root.findViewById(R.id.RestaurantCards);
+                        LinearLayoutManager rcLayoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
+                        resCards.setLayoutManager(rcLayoutManager);
+                        resCards.setAdapter(rcAdapter);
+                    }
+                })
                 .addOnFailureListener(e -> Log.w(TAG, "Error fetching documents", e));
 
         //Cuisine Buttons Layout
@@ -346,14 +346,10 @@ public class HomeFragment extends Fragment {
             double reviewCount = 0;
             for (QueryDocumentSnapshot review : reviewsSnapshot.getResult()) {
                 try {
-                    //Log.i(TAG, "RATING :" + review.get("Rating"));
+                    Log.i(TAG, "RATING :" + review.get("Rating"));
                     totalScore += review.getDouble("Rating");
-                } catch (Exception e) {
-                    //Log.i(TAG, "RATING : [NO REVIEWS]");
-                    totalScore = 0;
-                    break;
-                }
-                reviewCount++;
+                    reviewCount++;
+                } catch (Exception e) {}
             }
             double avgRating = Math.round(totalScore / reviewCount * 2) / 2.0;
             callback.onSuccess(avgPrice, avgRating);
@@ -376,6 +372,6 @@ public class HomeFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        binding = null;
+        binding=null;
     }
 }
