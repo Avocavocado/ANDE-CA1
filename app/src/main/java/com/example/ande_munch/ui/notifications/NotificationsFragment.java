@@ -19,6 +19,7 @@ import com.example.ande_munch.ProfilePage;
 import com.example.ande_munch.R;
 import com.example.ande_munch.classes.Dish;
 import com.example.ande_munch.databinding.FragmentNotificationsBinding;
+import com.example.ande_munch.methods.LoginMethods;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
@@ -42,6 +43,9 @@ public class NotificationsFragment extends Fragment {
     private RecyclerView recyclerViewDishes2;
     private RecyclerView recyclerViewDishes3;
     ImageView profileImageView;
+    LoginMethods loginMethods = new LoginMethods();
+    String loggedInEmail = loginMethods.getUserEmail();
+    Object DishesUnlocked;
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         NotificationsViewModel notificationsViewModel =
                 new ViewModelProvider(this).get(NotificationsViewModel.class);
@@ -70,6 +74,7 @@ public class NotificationsFragment extends Fragment {
         recyclerViewDishes3.setLayoutManager(new GridLayoutManager(getContext(), 3));
 
         getAllDishes();
+        getUserProfileDishesUnlocked();
 
         return root;
     }
@@ -142,11 +147,37 @@ public class NotificationsFragment extends Fragment {
                     } else if (recyclerView == recyclerViewDishes3) {
                         binding.CuisineTxt3.setText(cuisine);
                     }
-                    DishAdapter adapter = new DishAdapter(dishes);
+                    DishAdapter adapter = new DishAdapter(dishes, DishesUnlocked);
                     recyclerView.setAdapter(adapter);
                 });
             });
         }
+    }
+
+    public void getUserProfileDishesUnlocked() {
+        db.collection("Users").document(loggedInEmail)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        DishesUnlocked = documentSnapshot.get("Dishes");
+                        if (DishesUnlocked != null) {
+                            Log.d("getUserDishesDetails", "Got Dishes Unlocked: " + DishesUnlocked);
+                        } else {
+                            Log.d("getUserDishesDetails", "Field does not exist");
+                        }
+                    } else {
+                        Log.d("getUserDishesDetails", "No such document");
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.d("getUserDishesDetails", "Error getting user details dishes: " + e.getMessage());
+                });
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        getAllDishes();
+        getUserProfileDishesUnlocked();
     }
     @Override
     public void onDestroyView() {

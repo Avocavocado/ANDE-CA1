@@ -90,7 +90,7 @@ public class LoginMethods {
         Map<String, Object> newUserMap = new HashMap<>();
         newUserMap.put("Diet", "None");
         newUserMap.put("Password", "");
-        newUserMap.put("ProfileImage", "");
+        newUserMap.put("ProfileImage", "https://firebasestorage.googleapis.com/v0/b/munch-e31d6.appspot.com/o/UserImages%2FDefault_Profile.jpeg?alt=media");
         newUserMap.put("Username", "");
 
         newUserRef.set(newUserMap)

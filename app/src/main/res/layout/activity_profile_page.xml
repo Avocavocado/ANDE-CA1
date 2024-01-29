@@ -35,6 +35,36 @@
         app:srcCompat="@drawable/back_button"
         android:contentDescription="Back Button" />
 
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/profileImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:contentDescription="@string/profile_image"
+        android:padding="2dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/logoutBtn"
+        app:shapeAppearanceOverlay="@style/CircularImageView"
+        app:srcCompat="@drawable/profile_pic" />
+
+    <ImageView
+        android:id="@+id/editProfileBtn"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="92dp"
+        android:clickable="true"
+        android:contentDescription="Edit Profile Button"
+        android:focusable="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.658"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/profileImageView"
+        app:srcCompat="@drawable/edit_profile_icon"
+        android:onClick="onEditProfileClick"/>
+
     <Button
         android:id="@+id/logoutBtn"
         android:layout_width="107dp"
@@ -47,20 +77,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/imageView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
-        app:shapeAppearanceOverlay="@style/CircularImageView"
-        android:contentDescription="@string/profile_image"
-        android:padding="2dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/logoutBtn"
-        app:srcCompat="@drawable/profile_pic" />
-
     <TextView
         android:id="@+id/usernameTxt"
         android:layout_width="wrap_content"
@@ -71,7 +87,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.114"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView3" />
+        app:layout_constraintTop_toBottomOf="@+id/profileImageView" />
 
     <EditText
         android:id="@+id/usernameEditTxt"
@@ -81,6 +97,7 @@
         android:ems="10"
         android:inputType="text"
         android:text="@string/username"
+        android:textColor='#000000'
         android:paddingStart="16dp"
         android:background="@drawable/profile_button"
         app:layout_constraintEnd_toEndOf="parent"
@@ -106,6 +123,7 @@
         android:layout_height="40dp"
         android:layout_marginTop="12dp"
         android:ems="10"
+        android:textColor='#000000'
         android:inputType="textPassword"
         android:paddingStart="16dp"
         android:background="@drawable/profile_button"

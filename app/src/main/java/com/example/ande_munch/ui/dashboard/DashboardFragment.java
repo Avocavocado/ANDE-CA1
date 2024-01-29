@@ -1,6 +1,5 @@
 package com.example.ande_munch.ui.dashboard;
 
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Editable;
@@ -10,8 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.util.Log;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
@@ -21,9 +18,7 @@ import android.content.Intent;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.HashMap;
 
 import com.example.ande_munch.DisplayParty;
@@ -32,6 +27,7 @@ import com.example.ande_munch.ProfilePage;
 import com.example.ande_munch.R;
 import com.example.ande_munch.databinding.FragmentDashboardBinding;
 import com.example.ande_munch.methods.Callback;
+import com.example.ande_munch.methods.DisplayMethods;
 import com.example.ande_munch.methods.LoginMethods;
 import com.example.ande_munch.methods.PartyMethods;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -58,7 +54,9 @@ public class DashboardFragment extends Fragment {
     PartyMethods partyMethods = new PartyMethods();
 
     String userEmail = currentUser.getEmail();
-    String userLoggedInPartyCode;
+    // Generate the 4-digit party code
+    String partyCode = partyMethods.PartyCodeGenerator();
+
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         DashboardViewModel dashboardViewModel = new ViewModelProvider(this).get(DashboardViewModel.class);
 
@@ -78,35 +76,11 @@ public class DashboardFragment extends Fragment {
                     if (partyCodeExists) {
                         // Party code exists
                         System.out.println("Party found!");
+                        Log.d("TAG", "onDialogResult: " + dialogCode);
                         navigateToDisplayParty(userEmail,dialogCode);
                         // Call the method with the correct parameters
                         partyMethods.addUserToParty(userEmail, dialogCode);
-                        partyMethods.getUserFilterDetails(dialogCode, new Callback() {
-                            @Override
-                            public void onUserChecked(boolean userExists) {
 
-                            }
-
-                            @Override
-                            public void onUserDataFetched(List<Map<String, Object>> usersList) {
-
-                            }
-
-                            @Override
-                            public void onUserDataFetched(Map<String, Object> userDetails) {
-
-                            }
-
-                            @Override
-                            public void onFailure(Exception e) {
-
-                            }
-
-                            @Override
-                            public void onSuccess() {
-
-                            }
-                        });
                     } else {
                         // Party code does not exist
                         System.out.println("Party not found.");
@@ -124,12 +98,8 @@ public class DashboardFragment extends Fragment {
 
         binding.createPartyBtn.setOnClickListener(view -> {
             initCreateParty();
-            navigateToDisplayParty(userEmail,userLoggedInPartyCode);
+            navigateToDisplayParty(userEmail, partyCode);
         });
-
-        // final TextView textView = binding.textDashboard;
-        // dashboardViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
-
         return root;
     }
 
@@ -147,6 +117,7 @@ public class DashboardFragment extends Fragment {
     public void navigateToDisplayParty(String email, String dialogCode) {
         Intent intent = new Intent(getActivity(), DisplayParty.class);
         intent.putExtra("email", email);
+        Log.d("TAG", "navigateToDisplayParty: " + dialogCode);
         intent.putExtra("dialogCode", dialogCode);
         startActivity(intent);
     }
@@ -162,9 +133,6 @@ public class DashboardFragment extends Fragment {
 
     public void createParty(HashMap<String, HashMap<String, Object>> userDataMap) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        // Generate the 4-digit party code
-        String partyCode = partyMethods.PartyCodeGenerator();
 
         // Get user emails and details to add to the party
         getUserEmail(new OnUserDataFetchedListener() {
@@ -339,21 +307,20 @@ public class DashboardFragment extends Fragment {
         builder.setPositiveButton("Join", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                // Handle the positive button action
-                // You can access the entered characters from the EditText widgets here
                 String input1 = editText1.getText().toString();
                 String input2 = editText2.getText().toString();
                 String input3 = editText3.getText().toString();
                 String input4 = editText4.getText().toString();
 
-                // Concatenate the inputs into a string
                 String dialogCode = input1 + input2 + input3 + input4;
 
-                // Dismiss the dialog
                 dialog.dismiss();
 
-                // Call the callback with the concatenated string
-                callback.onDialogResult(dialogCode);
+                System.out.println("The dialog code is: " + dialogCode);
+
+                Intent intent = new Intent(getActivity(), DisplayParty.class);
+                intent.putExtra("DIALOG_CODE", dialogCode);
+                startActivity(intent);
             }
         });
 
@@ -368,6 +335,6 @@ public class DashboardFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        binding = null;
+        binding=null;
     }
 }
