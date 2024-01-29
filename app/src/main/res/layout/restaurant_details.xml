@@ -10,17 +10,19 @@
     android:layout_height="match_parent"
     android:background="@color/bgColor">
 
+
     <ImageButton
         android:id="@+id/closeRestaurantDetails"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="24dp"
+        android:background="@null"
+        android:scaleType="centerInside"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.081"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@android:drawable/ic_menu_close_clear_cancel" />
-
+        app:srcCompat="@drawable/cancel" />
 
     <androidx.cardview.widget.CardView
         android:layout_width="350dp"
@@ -218,9 +220,9 @@
         android:id="@+id/newReview"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="32dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.925"
+        app:layout_constraintHorizontal_bias="0.924"
         app:layout_constraintStart_toEndOf="@+id/textView10"
         app:layout_constraintTop_toBottomOf="@+id/menuItems"
         app:srcCompat="?android:attr/listChoiceIndicatorMultiple" />

@@ -241,8 +241,4 @@ public class ProfilePage extends AppCompatActivity{
                      Toast.makeText(ProfilePage.this, "Failed to update profile image.", Toast.LENGTH_SHORT).show();
                 });
     }
-
-
-
-
 }

@@ -346,14 +346,10 @@ public class HomeFragment extends Fragment {
             double reviewCount = 0;
             for (QueryDocumentSnapshot review : reviewsSnapshot.getResult()) {
                 try {
-                    //Log.i(TAG, "RATING :" + review.get("Rating"));
+                    Log.i(TAG, "RATING :" + review.get("Rating"));
                     totalScore += review.getDouble("Rating");
-                } catch (Exception e) {
-                    //Log.i(TAG, "RATING : [NO REVIEWS]");
-                    totalScore = 0;
-                    break;
-                }
-                reviewCount++;
+                    reviewCount++;
+                } catch (Exception e) {}
             }
             double avgRating = Math.round(totalScore / reviewCount * 2) / 2.0;
             callback.onSuccess(avgPrice, avgRating);
@@ -376,6 +372,6 @@ public class HomeFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        binding = null;
+        binding=null;
     }
 }

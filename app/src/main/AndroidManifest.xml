@@ -115,8 +115,13 @@
             android:exported="true"
             android:label="Dish Description">
         </activity>
-        <activity>
+        <activity
             android:name=".SwipePage"
+            android:exported="true"
+            android:label="New Review">
+        </activity>
+        <activity
+            android:name=".restaurant_card_swipe"
             android:exported="true"
             android:label="New Review">
         </activity>

@@ -92,7 +92,7 @@ public class RestaurantDetails extends AppCompatActivity implements OnMapReadyCa
         double avgRating = info.getDouble("AvgRating");
         String imageUrl = info.getString("Image");
         String descText = info.getString("Desc");
-        String addressText = info.getString("Address");
+        String addressText = info.getString("Address") + " (" + info.getDouble("Distance") + "km)";
         ArrayList<String> cuisineArray = info.getStringArrayList("Cuisine");
         List<Object> openingHours = (List<Object>) info.get("OpeningHours");
 
@@ -156,16 +156,22 @@ public class RestaurantDetails extends AppCompatActivity implements OnMapReadyCa
                            0,
                            TableRow.LayoutParams.WRAP_CONTENT,
                            2f));
-                   dataRow.addView(dayText);
 
                     // Data column 2 (Opening Hours)
                    TextView openingHoursText = new TextView(this);
-                   openingHoursText.setText(openTime + "-" + closeTime + "\n");
+                   openingHoursText.setText(openTime + " - " + closeTime + "\n");
                    openingHoursText.setGravity(Gravity.CENTER);
                    openingHoursText.setLayoutParams(new TableRow.LayoutParams(
                            0,
                            TableRow.LayoutParams.WRAP_CONTENT,
                            3f));
+
+                   if (index == LocalDate.now().getDayOfWeek().getValue() - 1) {
+                       dayText.setTextColor(Color.parseColor("#00FF66"));
+                       openingHoursText.setTextColor(Color.parseColor("#00FF66"));
+                   }
+
+                   dataRow.addView(dayText);
                    dataRow.addView(openingHoursText);
 
                    // Add data row to the table
