@@ -3,6 +3,8 @@ package com.example.ande_munch.ui.home;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -25,6 +27,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.ande_munch.ChatBotActivity;
 import com.example.ande_munch.CuisineButtonAdapter;
 import com.example.ande_munch.FilterActivity;
 import com.example.ande_munch.MainActivity;
@@ -46,10 +49,12 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 public class HomeFragment extends Fragment {
     private static final String TAG = "ExploreRestaurants";
@@ -120,8 +125,8 @@ public class HomeFragment extends Fragment {
                                 @Override
                                 public void onSuccess(double avgPrice, double avgRating) {
                                     GeoPoint geopoint = document.getGeoPoint("Location");
-                                    Log.i("GPS","HomeFrag: " + mainActivity.getLatitude() + " " + mainActivity.getLongitude() + " " + geopoint.getLatitude() +  " " + geopoint.getLongitude());
-                                    Log.i("GPS", "Distance: " + getDistance(mainActivity.getLatitude(), mainActivity.getLongitude(), geopoint.getLatitude(), geopoint.getLongitude()));
+                                    //Log.i("GPS","HomeFrag: " + mainActivity.getLatitude() + " " + mainActivity.getLongitude() + " " + geopoint.getLatitude() +  " " + geopoint.getLongitude());
+                                    //Log.i("GPS", "Distance: " + getDistance(mainActivity.getLatitude(), mainActivity.getLongitude(), geopoint.getLatitude(), geopoint.getLongitude()));
                                     double distance = getDistance(mainActivity.getLatitude(), mainActivity.getLongitude(), geopoint.getLatitude(), geopoint.getLongitude());
                                     restaurants.add(new Restaurant(document, avgPrice, avgRating, distance));
                                     rcAdapter.notifyItemInserted(restaurants.size() - 1);
@@ -188,6 +193,30 @@ public class HomeFragment extends Fragment {
             public void onClick(View v) {
                 Intent intent = new Intent(requireActivity(), FilterActivity.class);
                 getFilters.launch(intent);
+            }
+        });
+
+        ImageButton startBot = root.findViewById(R.id.startBot);
+        startBot.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(requireActivity(), ChatBotActivity.class);
+
+                Geocoder geocoder;
+                List<Address> addresses;
+                geocoder = new Geocoder(requireContext(), Locale.getDefault());
+
+                try {
+                    addresses = geocoder.getFromLocation(mainActivity.getLatitude(), mainActivity.getLongitude(), 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+                } catch (IOException e) { throw new RuntimeException(e); }
+
+                String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+                String city = addresses.get(0).getLocality();
+                String state = addresses.get(0).getAdminArea();
+                String country = addresses.get(0).getCountryName();
+
+                intent.putExtra("Location", country + ", " + city + ", " + address);
+                startActivity(intent);
             }
         });
 

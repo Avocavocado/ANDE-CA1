@@ -92,13 +92,14 @@
 
     <TextView
         android:id="@+id/restaurantDetailsName"
-        android:layout_width="wrap_content"
+        android:layout_width="350dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="[RESTAURANT NAME]"
+        android:textAlignment="center"
+        android:textColor="@color/white"
         android:textSize="22dp"
         android:textStyle="bold"
-        android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageBar" />
