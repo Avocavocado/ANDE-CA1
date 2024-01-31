@@ -118,13 +118,17 @@
         <activity
             android:name=".SwipePage"
             android:exported="true"
-            android:label="New Review">
+            android:label="Swipe Page">
         </activity>
         <activity
             android:name=".restaurant_card_swipe"
             android:exported="true"
-            android:label="New Review">
+            android:label="Card Swipe">
         </activity>
-
+        <activity
+            android:name=".ChatBotActivity"
+            android:exported="true"
+            android:label="Chat Bot">
+        </activity>
     </application>
 </manifest>
