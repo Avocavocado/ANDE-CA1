@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,13 +32,16 @@ import com.example.ande_munch.ChatBotActivity;
 import com.example.ande_munch.CuisineButtonAdapter;
 import com.example.ande_munch.FilterActivity;
 import com.example.ande_munch.MainActivity;
+import com.example.ande_munch.ProfilePage;
 import com.example.ande_munch.R;
 import com.example.ande_munch.classes.LocationTracker;
 import com.example.ande_munch.classes.Restaurant;
 import com.example.ande_munch.RestaurantCardAdapter;
 import com.example.ande_munch.RestaurantDetails;
 import com.example.ande_munch.databinding.ExploreRestaurantsBinding;
+import com.example.ande_munch.methods.Callback;
 import com.example.ande_munch.methods.LoginMethods;
+import com.example.ande_munch.methods.ProfileMethods;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -46,6 +50,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.squareup.picasso.Picasso;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -55,6 +60,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class HomeFragment extends Fragment {
     private static final String TAG = "ExploreRestaurants";
@@ -71,6 +77,8 @@ public class HomeFragment extends Fragment {
     private String priceFilter = "Any";
     private String ratingFilter = "Any";
     private int distanceFilter = 0;
+    private ImageView profileImageView;
+    private ProfileMethods profileMethods = new ProfileMethods();
     private LoginMethods loginMethods = new LoginMethods();
     private MainActivity mainActivity;
     private List<String> urls =
@@ -87,6 +95,55 @@ public class HomeFragment extends Fragment {
 
         String email = loginMethods.getUserEmail();
         mainActivity = (MainActivity) getActivity();
+
+        profileImageView = binding.getRoot().findViewById(R.id.profileImageView);
+
+        profileMethods.getUserProfileImage(new com.example.ande_munch.methods.Callback() {
+            @Override
+            public void onUserChecked(boolean userExists) {
+
+            }
+
+            @Override
+            public void onUserDataFetched(List<Map<String, Object>> usersList) {
+
+            }
+
+            @Override
+            public void onUserDataFetched(Map<String, Object> userDetails) {
+
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+
+            }
+
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onUserImageFetched(String profileImage) {
+                if (profileImage != null && !profileImage.isEmpty()) {
+                    Picasso.get()
+                            .load(profileImage)
+                            .resize(50,50)
+                            .centerCrop()
+                            .into(profileImageView);
+                } else {
+                    Log.d("NotificationsFragment", "Profile image URL is null or empty");
+                }
+            }
+        });
+        profileImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), ProfilePage.class);
+                startActivity(intent);
+            }
+        });
 
         searchText = (EditText) root.findViewById(R.id.searchText);
         searchText.addTextChangedListener(new TextWatcher() {
@@ -125,8 +182,8 @@ public class HomeFragment extends Fragment {
                                 @Override
                                 public void onSuccess(double avgPrice, double avgRating) {
                                     GeoPoint geopoint = document.getGeoPoint("Location");
-                                    //Log.i("GPS","HomeFrag: " + mainActivity.getLatitude() + " " + mainActivity.getLongitude() + " " + geopoint.getLatitude() +  " " + geopoint.getLongitude());
-                                    //Log.i("GPS", "Distance: " + getDistance(mainActivity.getLatitude(), mainActivity.getLongitude(), geopoint.getLatitude(), geopoint.getLongitude()));
+                                    Log.i("GPS","HomeFrag: " + mainActivity.getLatitude() + " " + mainActivity.getLongitude() + " " + geopoint.getLatitude() +  " " + geopoint.getLongitude());
+                                    Log.i("GPS", "Distance: " + getDistance(mainActivity.getLatitude(), mainActivity.getLongitude(), geopoint.getLatitude(), geopoint.getLongitude()));
                                     double distance = getDistance(mainActivity.getLatitude(), mainActivity.getLongitude(), geopoint.getLatitude(), geopoint.getLongitude());
                                     restaurants.add(new Restaurant(document, avgPrice, avgRating, distance));
                                     rcAdapter.notifyItemInserted(restaurants.size() - 1);
@@ -219,7 +276,6 @@ public class HomeFragment extends Fragment {
                 startActivity(intent);
             }
         });
-
         return root;
     }
 

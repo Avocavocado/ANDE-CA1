@@ -53,6 +53,31 @@ public class ProfileMethods {
                 });
     }
 
+    public void getUserProfileImage(Callback callback) {
+        db.collection("Users").document(loggedInEmail)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String profileImage = documentSnapshot.getString("ProfileImage");
+                        if (profileImage != null) {
+                            Log.d("getUserDetails", "Got Profile Image: " + profileImage);
+                            callback.onUserImageFetched(profileImage);
+                        } else {
+                            Log.d("getUserDetails", "Profile image not found");
+                            callback.onFailure(new Exception("Profile image not found"));
+                        }
+                    } else {
+                        Log.d("getUserDetails", "No such document");
+                        callback.onFailure(new Exception("No such document"));
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.d("getUserDetails", "Error getting profile image: " + e.getMessage());
+                    callback.onFailure(e); // Handle the failure case
+                });
+    }
+
+
 
 
 }

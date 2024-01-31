@@ -140,7 +140,6 @@ public class RestaurantCardAdapter extends RecyclerView.Adapter<RestaurantCardAd
         //Opening Hours
         int dayOfWeek = LocalDate.now().getDayOfWeek().getValue() - 1;
         List<Object> openingHours = (List<Object>) item.data.get("OpeningHours");
-        //Log.i("OPEN", item.data.getId() + " isNull" + (openingHours == null));
         Map<String,String> todayOH = (Map<String, String>) openingHours.get(dayOfWeek);
         LocalTime now = LocalTime.now();
         LocalTime openingTime = LocalTime.parse(todayOH.get("Open"), DateTimeFormatter.ofPattern("H:mm"));

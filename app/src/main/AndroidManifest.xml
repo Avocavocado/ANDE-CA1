@@ -130,6 +130,5 @@
             android:exported="true"
             android:label="Chat Bot">
         </activity>
-
     </application>
 </manifest>

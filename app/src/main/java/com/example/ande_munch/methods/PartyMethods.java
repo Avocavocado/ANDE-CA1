@@ -185,6 +185,11 @@ public class PartyMethods {
             public void onSuccess() {
 
             }
+
+            @Override
+            public void onUserImageFetched(String profileImage) {
+
+            }
         });
     }
 

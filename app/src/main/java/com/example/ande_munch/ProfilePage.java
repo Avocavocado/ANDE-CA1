@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -44,12 +45,10 @@ public class ProfilePage extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Initialize the binding
         binding = ActivityProfilePageBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
 
-        // Set the onClickListener for logout button
         binding.logoutBtn.setOnClickListener(v -> signOutAndQuit());
         binding.updateBtn.setOnClickListener(v -> updateProfile());
 
@@ -148,6 +147,11 @@ public class ProfilePage extends AppCompatActivity{
                     // Handle the success case, e.g., show a success message
                     android.widget.Toast.makeText(ProfilePage.this, "Profile updated successfully", android.widget.Toast.LENGTH_SHORT).show();
                 }
+
+                @Override
+                public void onUserImageFetched(String profileImage) {
+
+                }
             });
         }
     }
@@ -155,6 +159,8 @@ public class ProfilePage extends AppCompatActivity{
     private int getPositionForDietaryRestriction(String dietaryRestriction) {
 
         String[] dietaryOptions = {"None","Vegetarian", "Vegan"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.spinner_item, dietaryOptions);
+        binding.dietSpinner.setAdapter(adapter);
         for (int i = 0; i < dietaryOptions.length; i++) {
             if (dietaryOptions[i].equalsIgnoreCase(dietaryRestriction)) {
                 return i;
@@ -217,11 +223,6 @@ public class ProfilePage extends AppCompatActivity{
                 });
     }
 
-    protected void onResume() {
-        super.onResume();
-        loadUserProfile();
-    }
-
     private void loadUserProfile(){
         profileMethods.getUserProfileDetails(new Callback() {
             @Override
@@ -248,6 +249,11 @@ public class ProfilePage extends AppCompatActivity{
 
             @Override
             public void onSuccess() {
+
+            }
+
+            @Override
+            public void onUserImageFetched(String profileImage) {
 
             }
         });
