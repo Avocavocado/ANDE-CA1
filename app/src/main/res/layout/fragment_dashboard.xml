@@ -7,16 +7,16 @@
     android:background="@color/bgColor"
     tools:context=".ui.dashboard.DashboardFragment">
 
-    <!-- Profile Icon -->
-    <Button
-        android:id="@+id/ProfileBtn"
+    <include
+        layout="@layout/profile_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="20dp"
-        android:background="@color/white"
-        android:text="Profile"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="64dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.904"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -24,7 +24,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="96dp"
+        android:layout_marginTop="76dp"
         android:layout_marginEnd="16dp"
         android:fontFamily="@font/inter_font"
         android:text="@string/party_title"

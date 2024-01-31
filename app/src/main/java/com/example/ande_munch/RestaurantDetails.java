@@ -18,6 +18,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.ande_munch.classes.Review;
+import com.example.ande_munch.methods.Callback;
+import com.example.ande_munch.methods.ProfileMethods;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -51,6 +53,7 @@ public class RestaurantDetails extends AppCompatActivity implements OnMapReadyCa
     private TextView rating;
     private TextView openInfo;
     private List<Review> reviewItems;
+    private ProfileMethods profileMethods = new ProfileMethods();
     private TableLayout openingHoursTable;
     private final String TAG = "RestaurantDetails";
     private final String[] weekdays = new String[] {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat"," Sun"};
@@ -69,6 +72,54 @@ public class RestaurantDetails extends AppCompatActivity implements OnMapReadyCa
         address = findViewById(R.id.restaurantAddress);
         openingHoursTable = findViewById(R.id.OpeningHours);
 
+        ImageView profileImageView = findViewById(R.id.profileImageView);
+
+        profileMethods.getUserProfileImage(new Callback() {
+            @Override
+            public void onUserChecked(boolean userExists) {
+
+            }
+
+            @Override
+            public void onUserDataFetched(List<Map<String, Object>> usersList) {
+
+            }
+
+            @Override
+            public void onUserDataFetched(Map<String, Object> userDetails) {
+
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+
+            }
+
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onUserImageFetched(String profileImage) {
+                if (profileImage != null && !profileImage.isEmpty()) {
+                    Picasso.get()
+                            .load(profileImage)
+                            .resize(50,50)
+                            .centerCrop()
+                            .into(profileImageView);
+                } else {
+                    Log.d("DishDescriptionActivity", "Profile image URL is null or empty");
+                }
+            }
+        });
+        profileImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(RestaurantDetails.this, ProfilePage.class);
+                startActivity(intent);
+            }
+        });
         ImageButton closeDetails = findViewById(R.id.closeRestaurantDetails);
         closeDetails.setOnClickListener(new View.OnClickListener() {
             @Override

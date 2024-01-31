@@ -19,13 +19,16 @@ import com.example.ande_munch.ProfilePage;
 import com.example.ande_munch.R;
 import com.example.ande_munch.classes.Dish;
 import com.example.ande_munch.databinding.FragmentNotificationsBinding;
+import com.example.ande_munch.methods.Callback;
 import com.example.ande_munch.methods.LoginMethods;
+import com.example.ande_munch.methods.ProfileMethods;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,6 +47,7 @@ public class NotificationsFragment extends Fragment {
     private RecyclerView recyclerViewDishes3;
     ImageView profileImageView;
     LoginMethods loginMethods = new LoginMethods();
+    ProfileMethods profileMethods = new ProfileMethods();
     String loggedInEmail = loginMethods.getUserEmail();
     Object DishesUnlocked;
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -55,7 +59,45 @@ public class NotificationsFragment extends Fragment {
 
         profileImageView = binding.getRoot().findViewById(R.id.profileImageView);
 
-        // Set the click listener
+        profileMethods.getUserProfileImage(new Callback() {
+            @Override
+            public void onUserChecked(boolean userExists) {
+
+            }
+
+            @Override
+            public void onUserDataFetched(List<Map<String, Object>> usersList) {
+
+            }
+
+            @Override
+            public void onUserDataFetched(Map<String, Object> userDetails) {
+
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+
+            }
+
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onUserImageFetched(String profileImage) {
+                if (profileImage != null && !profileImage.isEmpty()) {
+                    Picasso.get()
+                            .load(profileImage)
+                            .resize(50,50)
+                            .centerCrop()
+                            .into(profileImageView);
+                } else {
+                    Log.d("NotificationsFragment", "Profile image URL is null or empty");
+                }
+            }
+        });
         profileImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

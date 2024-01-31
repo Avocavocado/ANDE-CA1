@@ -15,7 +15,9 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.ande_munch.methods.Callback;
 import com.example.ande_munch.methods.LoginMethods;
+import com.example.ande_munch.methods.ProfileMethods;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
@@ -23,12 +25,14 @@ import com.squareup.picasso.Picasso;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class DishDescriptionActivity extends AppCompatActivity {
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     LoginMethods loginMethods = new LoginMethods();
+    ProfileMethods profileMethods = new ProfileMethods();
     String loggedInEmail = loginMethods.getUserEmail();
     String dishName;
     @Override
@@ -62,7 +66,45 @@ public class DishDescriptionActivity extends AppCompatActivity {
 
         ImageView profileImageView = findViewById(R.id.profileImageView);
 
-        // Set the click listener
+        profileMethods.getUserProfileImage(new com.example.ande_munch.methods.Callback() {
+            @Override
+            public void onUserChecked(boolean userExists) {
+
+            }
+
+            @Override
+            public void onUserDataFetched(List<Map<String, Object>> usersList) {
+
+            }
+
+            @Override
+            public void onUserDataFetched(Map<String, Object> userDetails) {
+
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+
+            }
+
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onUserImageFetched(String profileImage) {
+                if (profileImage != null && !profileImage.isEmpty()) {
+                    Picasso.get()
+                            .load(profileImage)
+                            .resize(50,50)
+                            .centerCrop()
+                            .into(profileImageView);
+                } else {
+                    Log.d("DishDescriptionActivity", "Profile image URL is null or empty");
+                }
+            }
+        });
         profileImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

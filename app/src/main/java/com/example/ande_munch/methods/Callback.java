@@ -13,4 +13,6 @@ public interface Callback {
     void onFailure(Exception e);
 
     void onSuccess();
+
+    void onUserImageFetched(String profileImage);
 }

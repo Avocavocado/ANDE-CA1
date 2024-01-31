@@ -16,8 +16,10 @@ import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -30,6 +32,7 @@ import com.example.ande_munch.methods.Callback;
 import com.example.ande_munch.methods.DisplayMethods;
 import com.example.ande_munch.methods.LoginMethods;
 import com.example.ande_munch.methods.PartyMethods;
+import com.example.ande_munch.methods.ProfileMethods;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -44,6 +47,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.example.ande_munch.DialogCallback;
+import com.squareup.picasso.Picasso;
 
 public class DashboardFragment extends Fragment {
 
@@ -51,8 +55,9 @@ public class DashboardFragment extends Fragment {
     FirebaseAuth mauth = FirebaseAuth.getInstance();
     FirebaseUser currentUser = mauth.getCurrentUser();
     LoginMethods loginMethods = new LoginMethods();
+    ProfileMethods profileMethods = new ProfileMethods();
     PartyMethods partyMethods = new PartyMethods();
-
+    ImageView profileImageView;
     String userEmail = currentUser.getEmail();
     // Generate the 4-digit party code
     String partyCode = partyMethods.PartyCodeGenerator();
@@ -63,7 +68,54 @@ public class DashboardFragment extends Fragment {
         binding = FragmentDashboardBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        binding.ProfileBtn.setOnClickListener(view -> navigateToProfilePage());
+        profileImageView = binding.getRoot().findViewById(R.id.profileImageView);
+
+        profileMethods.getUserProfileImage(new Callback() {
+            @Override
+            public void onUserChecked(boolean userExists) {
+
+            }
+
+            @Override
+            public void onUserDataFetched(List<Map<String, Object>> usersList) {
+
+            }
+
+            @Override
+            public void onUserDataFetched(Map<String, Object> userDetails) {
+
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+
+            }
+
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onUserImageFetched(String profileImage) {
+                if (profileImage != null && !profileImage.isEmpty()) {
+                    Picasso.get()
+                            .load(profileImage)
+                            .resize(50,50)
+                            .centerCrop()
+                            .into(profileImageView);
+                } else {
+                    Log.d("DashboardFragment", "Profile image URL is null or empty");
+                }
+            }
+        });
+        profileImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), ProfilePage.class);
+                startActivity(intent);
+            }
+        });
 
         DialogCallback dialogCallback = new DialogCallback() {
             @Override
