@@ -3,6 +3,7 @@ package com.example.ande_munch;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -45,6 +46,7 @@ public class restaurant_card_swipe extends AppCompatActivity {
     private LinearLayout cuisines;
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    List<Map<String, String>> openingHours;
     private CollectionReference RestaurantRef = db.collection("Restaurants");
     private ArrayList<HashMap<String, HashMap<String, Double>>> filteredRestaurantNames = new ArrayList<>();
     private HashMap<String, Map<String, Object>> restaurantDetails = new HashMap<>();
@@ -123,16 +125,36 @@ public class restaurant_card_swipe extends AppCompatActivity {
     }
 
     private void updateUI(RestaurantInfo restaurantInfo) {
+        // Original average rating
+        double averageRating = restaurantInfo.getAverageRating();
+        double roundedRating = Math.round(averageRating * 2) / 2.0;
+
         // Update the UI with the new object
         Picasso.get().load(restaurantInfo.getRestaurantImage()).into(RestaurantImage);
         RestaurantName.setText(restaurantInfo.getName());
         RestaurantDesc.setText(restaurantInfo.getDescription());
-        RestaurantRating.setText(String.valueOf(restaurantInfo.getAverageRating()));
-        openInfo.setText(restaurantInfo.isOpen() ? "Open" : "Closed");
-        for (String cuisine : restaurantInfo.getCuisines()) {
-            TextView cuisineView = new TextView(this);
-            cuisineView.setText(cuisine);
-            cuisines.addView(cuisineView);
+        RestaurantRating.setText(String.valueOf(roundedRating));
+        HashMap<String, String> openText = getOpenText();
+        openInfo.setText(openText.get("text"));
+        openInfo.setBackgroundColor(Color.parseColor(openText.get("color")));
+        cuisines.removeAllViews();
+        for (String cuisine: (List<String>) restaurantInfo.getCuisines()) {
+            TextView textView = new TextView(this);
+            textView.setText(cuisine);
+
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT);
+
+            int dp = (int) (0.5f * getResources().getDisplayMetrics().density);
+            layoutParams.setMargins(0, 0, 24*dp, 0);
+            textView.setPadding(26*dp, 8*dp, 26*dp, 8*dp);
+            textView.setBackgroundColor(Color.parseColor("#D7DAFF"));
+            textView.setTextColor(Color.parseColor("#53555C"));
+            textView.setLayoutParams(layoutParams);
+
+            cuisines.addView(textView);
+
         }
     }
 
@@ -206,33 +228,47 @@ public class restaurant_card_swipe extends AppCompatActivity {
         String address = (String) restaurantData.get("Address");
         Double averageRating = (Double) restaurantData.get("averageRating");
         Double averagePrice = (Double) restaurantData.get("averagePrice");
-        List<Map<String, String>> openingHours = (List<Map<String, String>>) restaurantData.get("OpeningHours");
-        boolean isOpen = calculateIsOpen(openingHours);
+        openingHours = (List<Map<String, String>>) restaurantData.get("OpeningHours");
 
         return new RestaurantInfo(restaurantName, description, restaurantImage, cuisine, openingHours, isOpen, averageRating);
     }
 
 
-    private boolean calculateIsOpen(List<Map<String, String>> openingHours) {
-        LocalDate currentDate = LocalDate.now();
-        DayOfWeek currentDay = currentDate.getDayOfWeek();
-        LocalTime localTime = LocalTime.now();
+    private HashMap<String, String> getOpenText() {
+        int dayOfWeek = LocalDate.now().getDayOfWeek().getValue() - 1;
+        Map<String,String> todayOH = (Map<String, String>) openingHours.get(dayOfWeek);
+        LocalTime now = LocalTime.now();
+        LocalTime openingTime = LocalTime.parse(todayOH.get("Open"), DateTimeFormatter.ofPattern("H:mm"));
+        LocalTime closingTime = LocalTime.parse(todayOH.get("Close"), DateTimeFormatter.ofPattern("H:mm"));
 
-        int dayIndex = currentDay.getValue() - 1;
+        boolean hasOpened = !now.isBefore(openingTime);
+        boolean hasClosed = !now.isBefore(closingTime);
 
-        if (dayIndex >= 0 && dayIndex < openingHours.size()) {
-            Map<String, String> todayOpeningHour = openingHours.get(dayIndex);
-            String openTime = todayOpeningHour.get("Open");
-            String closeTime = todayOpeningHour.get("Close");
-
-            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("H:mm");
-            LocalTime openingTime = LocalTime.parse(openTime, timeFormatter);
-            LocalTime closingTime = LocalTime.parse(closeTime, timeFormatter);
-
-            return localTime.isAfter(openingTime) && localTime.isBefore(closingTime);
-        } else {
-            Log.d("SwipeMethods", "Invalid day index for calculating opening hours");
-            return false;
+        if (hasOpened && !hasClosed) {
+            return new HashMap<String, String>(){
+                {{
+                    put("color", "#00FF66");
+                    put("text", "Open til " + closingTime.format(DateTimeFormatter.ofPattern("hh:mm a")));
+                }};
+            };
+        }
+        else if (!hasOpened && !hasClosed){
+            return new HashMap<String, String>(){
+                {{
+                    put("color", "#30303A");
+                    put("text", "Opens at " + openingTime.format(DateTimeFormatter.ofPattern("hh:mm a")));;
+                }};
+            };
+        }
+        else {
+            Map<String,String> tomorrowOH = (Map<String, String>) openingHours.get(dayOfWeek != 6 ? dayOfWeek+1 : 0);
+            LocalTime tomorrowOpeningTime = LocalTime.parse(tomorrowOH.get("Open"), DateTimeFormatter.ofPattern("H:mm"));
+            return new HashMap<String, String>(){
+                {{
+                    put("color", "#30303A");
+                    put("text", "Closed til " + tomorrowOpeningTime.format(DateTimeFormatter.ofPattern("hh:mm a")));;
+                }};
+            };
         }
     }
 }

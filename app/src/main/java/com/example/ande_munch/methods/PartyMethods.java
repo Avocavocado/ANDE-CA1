@@ -402,7 +402,7 @@ public class PartyMethods {
                     String restaurantCuisine = (String) restaurant.get("Cuisine");
 
 
-                    if (restaurantAvgPrice <= avgPrice && restaurantAvgRating >= avgRating) {
+                    if ((avgPrice == 0 || restaurantAvgPrice <= avgPrice) && (restaurantAvgRating >= avgRating || avgRating == 0)) {
                         HashMap<String, Double> restaurantMap = new HashMap<>();
                         double restaurantDistance = calculateGeoLocationDiff(userGeoPoint, restaurantGeoLocation);
                         restaurantMap.put("distance", restaurantDistance);

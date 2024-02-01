@@ -128,7 +128,7 @@ public class PartyFilter extends AppCompatActivity {
                 updates.put("price", priceValue);
                 updates.put("Cuisine", cuisines);
                 db.collection("Parties").document(partyCode).collection("Users").document(userId)
-                        .set(updates)
+                        .update(updates)
                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
