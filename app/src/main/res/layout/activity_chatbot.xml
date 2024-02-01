@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bgColor">
+
+    <ImageButton
+        android:id="@+id/closeChat"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="24dp"
+        android:background="@null"
+        android:scaleType="centerInside"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.081"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/cancel" />
+
+    <ScrollView
+        android:id="@+id/chatScroll"
+        android:layout_width="376dp"
+        android:layout_height="562dp"
+        android:layout_marginTop="40dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/closeChat">
+
+        <LinearLayout
+            android:id="@+id/chat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+        </LinearLayout>
+    </ScrollView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/messageCard"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="16dp"
+        app:cardCornerRadius="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/chatScroll"
+        >
+    <EditText
+        android:id="@+id/message"
+        android:layout_width="300dp"
+        android:layout_height="51dp"
+        android:background="#C8D8FF"
+        android:inputType="text"
+        android:paddingHorizontal="12dp"
+        android:hint="What are you craving?"
+        android:textColorHint="@color/blueGrey"
+        android:textColor="@color/black" />
+    </androidx.cardview.widget.CardView>
+
+    <ImageButton
+        android:id="@+id/sendMessage"
+        android:paddingVertical="8dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@null"
+        app:layout_constraintStart_toEndOf="@+id/messageCard"
+        app:layout_constraintTop_toBottomOf="@+id/chatScroll"
+        android:scaleType="centerInside"
+        app:srcCompat="@drawable/send" />
+</androidx.constraintlayout.widget.ConstraintLayout>

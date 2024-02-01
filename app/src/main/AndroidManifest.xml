@@ -2,6 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -12,6 +17,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ANDEMUNCH"
         tools:targetApi="31">
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key" />
         <activity android:name=".SplashScreen"
             android:exported="true">
             <intent-filter>
@@ -20,6 +28,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -34,6 +43,92 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
-    </application>
 
+        <!-- Add the LoginPage activity here -->
+        <activity
+            android:name=".LoginPage"
+            android:exported="true"
+            android:label="Login Page">
+        </activity>
+
+<!--        <activity-->
+<!--            android:name=".CreateParty"-->
+<!--            android:exported="true"-->
+<!--            android:label="CreateParty Page">-->
+<!--        </activity>-->
+
+<!--        <activity-->
+<!--            android:name=".JoinParty"-->
+<!--            android:exported="true"-->
+<!--            android:label="JoinParty Page">-->
+<!--        </activity>-->
+
+        <activity
+            android:name=".ExploreRestaurants"
+            android:exported="true"
+            android:label="Explore Restaurants">
+        </activity>
+
+        <activity
+            android:name=".FilterActivity"
+            android:exported="true"
+            android:label="Filter Page">
+        </activity>
+
+        <activity
+            android:name=".RegisterPage"
+            android:exported="true"
+            android:label="Login Page">
+        </activity>
+
+        <activity
+            android:name=".ProfilePage"
+            android:exported="true"
+            android:label="Profile Page">
+        </activity>
+
+        <activity
+            android:name=".DisplayParty"
+            android:exported="true"
+            android:label="Display Party Page">
+        </activity>
+
+        <activity
+            android:name=".PartyFilter"
+            android:exported="true"
+            android:label="Display Party Filter Page">
+        </activity>
+
+        <activity
+            android:name=".RestaurantDetails"
+            android:exported="true"
+            android:label="Display Restaurant Details Page">
+        </activity>
+
+        <activity
+            android:name=".NewReviewActivity"
+            android:exported="true"
+            android:label="New Review">
+        </activity>
+        <activity
+            android:name=".DishDescriptionActivity"
+            android:exported="true"
+            android:label="Dish Description">
+        </activity>
+        <activity
+            android:name=".SwipePage"
+            android:exported="true"
+            android:label="Swipe Page">
+        </activity>
+        <activity
+            android:name=".restaurant_card_swipe"
+            android:exported="true"
+            android:label="Card Swipe">
+        </activity>
+        <activity
+            android:name=".ChatBotActivity"
+            android:exported="true"
+            android:label="Chat Bot">
+        </activity>
+    </application>
 </manifest>

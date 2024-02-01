@@ -1,0 +1,60 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bgColor"
+    tools:context=".SwipePage">
+
+    <include
+        android:id="@+id/restaurantCard"
+        layout="@layout/restaurant_card"
+        android:layout_width="330dp"
+        android:layout_height="480dp"
+        android:layout_marginTop="-50dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/dislike"
+        android:layout_width="140dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="40dp"
+        android:backgroundTint="#FF6961"
+        android:text="Maybe not :("
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/restaurantCard" />
+
+    <Button
+        android:id="@+id/like"
+        android:layout_width="140dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="#77DD77"
+        android:text="Love it :)"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/restaurantCard" />
+
+    <Button
+        android:id="@+id/scuffedBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="@color/green"
+        android:paddingHorizontal="50dp"
+        android:paddingVertical='10dp'
+        android:text="START!"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/restaurantCard" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

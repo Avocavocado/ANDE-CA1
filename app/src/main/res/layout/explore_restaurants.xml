@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/bgColor">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="370dp"
+            android:layout_height="wrap_content"
+            android:text="@string/welcomeText"
+            android:textColor="#FFFFFF"
+            android:textSize="26dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.487"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.097" />
+
+        <EditText
+            android:id="@+id/searchText"
+            android:layout_width="300dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="16dp"
+            android:width="320dp"
+            android:background="#E7E9FF"
+            android:hint="@string/searchHintText"
+            android:inputType="textPersonName"
+            android:paddingLeft="40dp"
+            android:paddingRight="10dp"
+            android:textColor="@color/almostBlack"
+            android:textColorHint="#6A6A6A"
+            android:textSize="20dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView" />
+        <ImageButton
+            android:id="@+id/filterButton"
+            android:layout_width="61dp"
+            android:layout_height="61dp"
+            android:scaleType="centerInside"
+            android:layout_marginStart="12dp"
+            android:background="#E7E9FF"
+            android:contentDescription="filter page button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/searchText"
+            app:layout_constraintTop_toTopOf="@+id/searchText"
+            app:srcCompat="@drawable/filter" />
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="20dp"
+            app:layout_constraintStart_toStartOf="@+id/searchText"
+            app:layout_constraintTop_toTopOf="@+id/searchText"
+            app:srcCompat="@drawable/search" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/cuisineBtns"
+            android:layout_width="380dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.491"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/searchText" />
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Featured Restaurants"
+            android:textColor="#FFFFFF"
+            android:textSize="22dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.08"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cuisineBtns" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/RestaurantCards"
+            android:layout_width="380dp"
+            android:layout_height="580dp"
+            android:layout_marginTop="12dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.483"
+            app:layout_constraintStart_toStartOf="parent"
+            android:background="@color/bgColor"
+            app:layout_constraintTop_toBottomOf="@+id/textView3" />
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="16dp"
+            android:background="@color/green"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:cardCornerRadius="10dp"
+            >
+            <ImageButton
+                android:id="@+id/startBot"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:scaleType="centerCrop"
+                android:background="@color/green"
+                app:srcCompat="@drawable/ic_launcher_foreground" />
+        </androidx.cardview.widget.CardView>
+
+        <include
+            layout="@layout/profile_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="6dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.927"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

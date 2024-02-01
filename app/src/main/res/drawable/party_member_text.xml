@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#FFFFFF" /> <!-- Adjust the color to match the box background -->
+    <corners android:radius="5dp" /> <!-- Adjust the radius for your desired roundness -->
+    <padding
+        android:left="16dp"
+        android:top="8dp"
+        android:right="16dp"
+        android:bottom="8dp" /> <!-- Adjust the padding as needed -->
+    <size android:width="150dp" android:height="20dp" /> <!-- Adjust width and height as needed -->
+</shape>
