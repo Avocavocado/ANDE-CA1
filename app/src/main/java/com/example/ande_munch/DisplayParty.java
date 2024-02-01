@@ -40,6 +40,7 @@ public class DisplayParty extends AppCompatActivity {
     HashMap<String, Object> avgUserAttributes = new HashMap<>();
     ArrayList<HashMap<String, HashMap<String, Double>>> swipePageData = new ArrayList<>();
     String dialogCode;
+    String email;
     Boolean isLeader = false;
     String username;
 
@@ -62,7 +63,7 @@ public class DisplayParty extends AppCompatActivity {
 
         // Retrieve the intent that started this activity
         Intent intent = getIntent();
-
+        email = intent.getStringExtra("email");
         // Initialize the buttons
         Button buttonFilterPage = findViewById(R.id.partyFilterBtn);
         Button buttonSwipePage = findViewById(R.id.buttonSwipe);
@@ -177,8 +178,8 @@ public class DisplayParty extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(DisplayParty.this, PartyFilter.class);
-                intent.putExtra("PartyCode", "WXYZ");
-                intent.putExtra("User", "dillan@gmail.com");
+                intent.putExtra("PartyCode", dialogCode);
+                intent.putExtra("User", email);
                 startActivity(intent);
             }
         });
