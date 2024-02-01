@@ -142,6 +142,7 @@ public class PartyMethods {
 
     // Adding user to the party
     public void addUserToParty(String email, String PartyCode) {
+        Log.i("THAD", "HERE2");
         // Call method to check if user exists in the party
         checkUserInParty(email, PartyCode, new Callback() {
             @Override

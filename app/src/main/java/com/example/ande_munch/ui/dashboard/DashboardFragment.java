@@ -62,6 +62,7 @@ public class DashboardFragment extends Fragment {
     String userEmail = currentUser.getEmail();
     // Generate the 4-digit party code
     String partyCode = partyMethods.PartyCodeGenerator();
+    String globalDialogCode;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         DashboardViewModel dashboardViewModel = new ViewModelProvider(this).get(DashboardViewModel.class);
@@ -132,6 +133,7 @@ public class DashboardFragment extends Fragment {
                         Log.d("dialog", "onDialogResult: " + dialogCode);
 
                         // Call the method with the correct parameters
+                        Log.i("THAD", "HERE");
                         partyMethods.addUserToParty(userEmail, dialogCode);
                         navigateToDisplayParty(userEmail, dialogCode);
 
@@ -307,7 +309,6 @@ public class DashboardFragment extends Fragment {
             public void afterTextChanged(Editable s) {
             }
         });
-
         editText2.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -324,7 +325,6 @@ public class DashboardFragment extends Fragment {
             public void afterTextChanged(Editable s) {
             }
         });
-
         editText3.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -341,8 +341,6 @@ public class DashboardFragment extends Fragment {
             public void afterTextChanged(Editable s) {
             }
         });
-
-        // Set a TextWatcher for editText4 to disable further input if it contains one character
         editText4.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -369,15 +367,12 @@ public class DashboardFragment extends Fragment {
                 String input3 = editText3.getText().toString();
                 String input4 = editText4.getText().toString();
 
-                String dialogCode = input1 + input2 + input3 + input4;
+                globalDialogCode = input1 + input2 + input3 + input4;
 
                 dialog.dismiss();
 
-                System.out.println("The dialog code is: " + dialogCode);
-
-                Intent intent = new Intent(getActivity(), DisplayParty.class);
-                intent.putExtra("DIALOG_CODE", dialogCode);
-                startActivity(intent);
+                System.out.println("The dialog code is: " + globalDialogCode);
+                callback.onDialogResult(globalDialogCode);
             }
         });
 

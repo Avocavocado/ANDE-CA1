@@ -110,7 +110,11 @@ public class DisplayParty extends AppCompatActivity {
                                 // Extract the username and isLeader from the data
                                 username = (String) data.get("Username");
                                 try {
-                                    isLeader = (boolean) data.get("IsLeader");
+                                    if (data.get("IsLeader") == null) {
+                                        isLeader = false;
+                                    } else {
+                                        isLeader = (boolean) data.get("IsLeader");
+                                    }
                                 } catch (ClassCastException e) {
                                     e.printStackTrace();
                                     Log.d("DisplayParty", "IsLeader is not a boolean" + e.getMessage());
