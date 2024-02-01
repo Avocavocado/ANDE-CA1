@@ -162,6 +162,8 @@ public class DisplayParty extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(DisplayParty.this, PartyFilter.class);
+                intent.putExtra("PartyCode", "WXYZ");
+                intent.putExtra("User", "dillan@gmail.com");
                 startActivity(intent);
             }
         });

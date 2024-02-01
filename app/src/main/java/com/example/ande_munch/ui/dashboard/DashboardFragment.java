@@ -129,10 +129,11 @@ public class DashboardFragment extends Fragment {
                     if (partyCodeExists) {
                         // Party code exists
                         System.out.println("Party found!");
-                        Log.d("TAG", "onDialogResult: " + dialogCode);
-                        navigateToDisplayParty(userEmail, dialogCode);
+                        Log.d("dialog", "onDialogResult: " + dialogCode);
+
                         // Call the method with the correct parameters
                         partyMethods.addUserToParty(userEmail, dialogCode);
+                        navigateToDisplayParty(userEmail, dialogCode);
 
                     } else {
                         // Party code does not exist
