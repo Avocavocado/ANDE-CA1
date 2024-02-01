@@ -7,7 +7,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.BackgroundColorSpan;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -74,6 +79,12 @@ public class DisplayParty extends AppCompatActivity {
         // Check if intent is not null and has the extra "DIALOG_CODE"
         if (intent != null && intent.hasExtra("DIALOG_CODE")) {
             dialogCode = intent.getStringExtra("DIALOG_CODE");
+            TextView partyName = findViewById(R.id.partyListHeader);
+
+            SpannableString spannableString = new SpannableString("Party List " + dialogCode);
+            ForegroundColorSpan backgroundSpan = new ForegroundColorSpan(Color.parseColor("#00FF66"));
+            spannableString.setSpan(backgroundSpan, 10, spannableString.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            partyName.setText(spannableString);
 
             if (dialogCode != null && !dialogCode.isEmpty()) {
                 Log.d("DisplayParty", "Dialog Code: " + dialogCode);

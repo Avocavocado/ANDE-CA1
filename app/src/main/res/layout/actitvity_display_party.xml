@@ -18,7 +18,7 @@
         <!-- Example TextView for the number of members -->
         <TextView
             android:id="@+id/partyListHeader"
-            android:layout_width="0dp"
+            android:layout_width="244dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:baselineAligned="false"
@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="right|center"
-            android:text="10 Members"
+            android:text="100"
             android:textColor="@color/white"
             android:textSize="24sp" />
     </LinearLayout>
