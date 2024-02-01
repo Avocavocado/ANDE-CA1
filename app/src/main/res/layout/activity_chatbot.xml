@@ -50,7 +50,7 @@
         android:id="@+id/message"
         android:layout_width="300dp"
         android:layout_height="51dp"
-        android:background="#A0B6FF"
+        android:background="#C8D8FF"
         android:inputType="text"
         android:paddingHorizontal="12dp"
         android:hint="What are you craving?"
