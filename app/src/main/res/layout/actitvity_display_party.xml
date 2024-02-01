@@ -13,7 +13,7 @@
         android:paddingStart="32dp"
         android:paddingTop="16dp"
         android:paddingEnd="32dp"
-        android:paddingBottom="20dp">
+        android:paddingBottom="0dp">
 
         <!-- Example TextView for the number of members -->
         <TextView
@@ -42,8 +42,8 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/partyListRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="324dp"
-        android:layout_marginTop="160dp"
+        android:layout_height="405dp"
+        android:layout_marginTop="134dp"
         android:layout_marginBottom="20dp"
         android:clipToPadding="false"
         android:divider="@android:color/transparent"
@@ -63,6 +63,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
+            android:paddingVertical="12dp"
             android:layout_weight="1"
             android:backgroundTint="#A9A9A9"
             android:text="Leave"
@@ -71,9 +72,10 @@
         <Button
             android:id="@+id/buttonSwipe"
             android:layout_width="0dp"
+            android:paddingVertical="12dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:backgroundTint="#4CAF50"
+            android:backgroundTint="@color/green"
             android:text="Swipe"
             android:textColor="#FFFFFF" />
     </LinearLayout>
@@ -82,5 +84,7 @@
         android:id="@+id/partyFilterBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Filter" />
+        android:text="Filter"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="300dp"/>
 </FrameLayout>

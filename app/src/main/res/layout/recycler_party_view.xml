@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
+    android:layout_marginVertical="8dp"
+    android:layout_marginHorizontal="24dp"
     android:orientation="horizontal"
     android:background="@drawable/party_container">
 
@@ -14,10 +15,10 @@
         android:layout_weight="1"
         android:background="@color/white"
         android:gravity="center_vertical"
-        android:padding="16dp"
+        android:padding="10dp"
         android:text="Dillan Tan"
         android:textColor="@color/black"
-        android:textSize="18sp" />
+        android:textSize="16dp" />
 
     <ImageView
         android:id="@+id/partyLeaderIcon"
@@ -25,5 +26,5 @@
         android:layout_height="wrap_content"
         android:src="@drawable/party_leader"
         android:layout_gravity="end"
-        android:padding="16dp" />
+        android:padding="10dp" />
 </LinearLayout>

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/white"
     android:padding="16dp">
 
     <TextView
@@ -12,6 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:padding="16dp"
+        android:textColor="@color/almostBlack"
         android:text="Enter Party Code"
         android:textSize="24sp"
         android:textStyle="bold"
@@ -41,6 +43,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginEnd="8dp"
             android:layout_weight="1"
+            android:textColor="@color/black"
             android:background="@drawable/dialog_input"
             android:gravity="center"
             android:padding="8dp" />
@@ -51,6 +54,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
+            android:textColor="@color/black"
             android:layout_marginEnd="8dp"
             android:layout_weight="1"
             android:background="@drawable/dialog_input"
@@ -63,6 +67,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
+            android:textColor="@color/black"
             android:layout_weight="1"
             android:background="@drawable/dialog_input"
             android:gravity="center"
@@ -73,6 +78,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
+            android:textColor="@color/black"
             android:layout_marginEnd="16dp"
             android:layout_weight="1"
             android:background="@drawable/dialog_input"
