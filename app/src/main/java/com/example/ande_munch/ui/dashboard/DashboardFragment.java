@@ -133,7 +133,7 @@ public class DashboardFragment extends Fragment {
                         Log.d("dialog", "onDialogResult: " + dialogCode);
 
                         // Call the method with the correct parameters
-                        Log.i("THAD", "HERE");
+                        Log.i("THAD", "HERE WITH EMAIL" + userEmail + " AND CODE " + dialogCode);
                         partyMethods.addUserToParty(userEmail, dialogCode);
                         navigateToDisplayParty(userEmail, dialogCode);
 

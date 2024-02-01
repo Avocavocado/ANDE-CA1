@@ -37,6 +37,7 @@ public class PartyMethods {
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     private static final int CODE_LENGTH = 4;
     boolean partyCodeExists = false;
+    String globalUsername;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     public interface UserFilterDetailsCallback {
@@ -48,7 +49,7 @@ public class PartyMethods {
     }
 
     public interface FilterResultsCallback {
-        void onFilterResults(ArrayList<HashMap<String, HashMap<String, Double>>>tfilteredRestaurantNames);
+        void onFilterResults(ArrayList<HashMap<String, HashMap<String, Double>>> tfilteredRestaurantNames);
     }
 
     // Method to scan through all parties and check if code entered is one of them
@@ -142,17 +143,56 @@ public class PartyMethods {
 
     // Adding user to the party
     public void addUserToParty(String email, String PartyCode) {
-        Log.i("THAD", "HERE2");
+        Log.i("THAD", "HERE2 WITH EMAIL: " + email + " AND PARTYCODE: " + PartyCode);
+
+        // If the user exist
+        if (email != null) {
+            // Retrieve user details
+            db.collection("Users")
+                    .document(email)
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            if (task.isSuccessful()) {
+                                DocumentSnapshot document = task.getResult();
+                                if (document.exists()) {
+                                    // Accessing username field
+                                    globalUsername = document.getString("Username");
+                                    Log.d("PartyMethods", "Username is " + globalUsername);
+                                } else {
+                                    Log.d("PartyMethods", "No such document");
+                                }
+                            } else {
+                                Log.d("PartyMethods", "get failed with ", task.getException());
+                            }
+                        }
+                    });
+        } else {
+            Log.d("PartyMethods", "Email is null");
+        }
+
         // Call method to check if user exists in the party
         checkUserInParty(email, PartyCode, new Callback() {
             @Override
             public void onUserChecked(boolean userExists) {
+                Log.d("PartyMethods", "User exists: " + userExists);
+
                 if (!userExists) {
+                    Log.d("PartyMethods", "User does not exist in party");
                     // Fetch dietary restrictions
                     getDietaryRestrictions(email, dietaryRestrictions -> {
                         // Prepare user data as a Map
                         Map<String, Object> userData = new HashMap<>();
-                        userData.put("Username", "Wanna eat?");
+
+                        if (globalUsername != null) {
+                            Log.d("PartyMethods", "Username is " + globalUsername);
+                            userData.put("Username", globalUsername);
+                        } else {
+                            Log.d("PartyMethods", "Username is null");
+                            userData.put("Username", "Example User");
+                        }
+
                         userData.put("price", 0);
                         userData.put("rating", 0);
                         userData.put("Distance", 0);
@@ -166,6 +206,8 @@ public class PartyMethods {
                                 .addOnSuccessListener(aVoid -> Log.d("PartyMethods", "User added to party"))
                                 .addOnFailureListener(e -> Log.d("PartyMethods", "Error adding user to party: " + e.getMessage()));
                     });
+                } else {
+                    Log.d("PartyMethods", "User already exists in party");
                 }
             }
 
