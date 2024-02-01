@@ -37,6 +37,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Firebase;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -101,7 +102,7 @@ public class DashboardFragment extends Fragment {
                 if (profileImage != null && !profileImage.isEmpty()) {
                     Picasso.get()
                             .load(profileImage)
-                            .resize(50,50)
+                            .resize(50, 50)
                             .centerCrop()
                             .into(profileImageView);
                 } else {
@@ -129,7 +130,7 @@ public class DashboardFragment extends Fragment {
                         // Party code exists
                         System.out.println("Party found!");
                         Log.d("TAG", "onDialogResult: " + dialogCode);
-                        navigateToDisplayParty(userEmail,dialogCode);
+                        navigateToDisplayParty(userEmail, dialogCode);
                         // Call the method with the correct parameters
                         partyMethods.addUserToParty(userEmail, dialogCode);
 
@@ -170,7 +171,7 @@ public class DashboardFragment extends Fragment {
         Intent intent = new Intent(getActivity(), DisplayParty.class);
         intent.putExtra("email", email);
         Log.d("TAG", "navigateToDisplayParty: " + dialogCode);
-        intent.putExtra("dialogCode", dialogCode);
+        intent.putExtra("DIALOG_CODE", dialogCode);
         startActivity(intent);
     }
 
@@ -213,6 +214,7 @@ public class DashboardFragment extends Fragment {
                                         Log.w("CreateParty", "Error adding user to party", e)
                                 );
                     }
+
                 }).addOnFailureListener(e -> Log.w("CreateParty", "Error creating party document", e));
             }
         });
@@ -222,6 +224,7 @@ public class DashboardFragment extends Fragment {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         if (currentUser != null) {
+            // Get the current user's email
             String currentUserEmail = currentUser.getEmail();
 
             db.collection("Users").get().addOnCompleteListener(task -> {
@@ -241,6 +244,7 @@ public class DashboardFragment extends Fragment {
                             userDetails.put("Diet", document.getString("Diet"));
                             userDetails.put("ProfileImage", document.getString("ProfileImage"));
                             userDetails.put("Username", document.getString("Username"));
+                            userDetails.put("IsLeader", true);
 
                             userDataMap.put(emailAccount, userDetails);
                             break; // Stop the loop as the user is found
@@ -387,6 +391,6 @@ public class DashboardFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        binding=null;
+        binding = null;
     }
 }

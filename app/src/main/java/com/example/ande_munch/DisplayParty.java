@@ -1,6 +1,8 @@
 package com.example.ande_munch;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -13,6 +15,7 @@ import android.widget.TextView;
 
 import com.example.ande_munch.methods.DisplayMethods;
 import com.example.ande_munch.methods.PartyMethods;
+import com.example.ande_munch.ui.dashboard.DashboardFragment;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
@@ -58,6 +61,15 @@ public class DisplayParty extends AppCompatActivity {
         // Initialize the buttons
         Button buttonFilterPage = findViewById(R.id.partyFilterBtn);
         Button buttonSwipePage = findViewById(R.id.buttonSwipe);
+        Button buttonLeavePage = findViewById(R.id.buttonLeave);
+
+        // Logic for the leave button
+        buttonLeavePage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         // Check if intent is not null and has the extra "DIALOG_CODE"
         if (intent != null && intent.hasExtra("DIALOG_CODE")) {
@@ -70,7 +82,7 @@ public class DisplayParty extends AppCompatActivity {
                 displayMethods.addPartyListener(dialogCode, new DisplayMethods.PartyListenerCallback() {
                     @Override
                     public void onPartyDataReceived(List<DocumentSnapshot> documents) {
-                        ArrayList<HashMap <String, Object>> memberList = new ArrayList<>();
+                        ArrayList<HashMap<String, Object>> memberList = new ArrayList<>();
                         for (DocumentSnapshot document : documents) {
                             Log.d("PartyData", "Document: " + document.getData());
 

@@ -156,6 +156,7 @@ public class PartyMethods {
                         userData.put("Distance", 0);
                         userData.put("Dietary Restrictions", dietaryRestrictions);
                         userData.put("Cuisine", Arrays.asList(new String[]{}));
+                        userData.put("IsLeader", false);
 
                         // Add user to the party
                         db.collection("Parties").document(PartyCode).collection("Users").document(email)
