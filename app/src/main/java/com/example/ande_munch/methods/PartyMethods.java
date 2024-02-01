@@ -152,6 +152,7 @@ public class PartyMethods {
                     getDietaryRestrictions(email, dietaryRestrictions -> {
                         // Prepare user data as a Map
                         Map<String, Object> userData = new HashMap<>();
+                        userData.put("Username", "Wanna eat?");
                         userData.put("price", 0);
                         userData.put("rating", 0);
                         userData.put("Distance", 0);
