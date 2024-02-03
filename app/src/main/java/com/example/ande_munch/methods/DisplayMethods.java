@@ -64,7 +64,7 @@ public class DisplayMethods {
                                 // Getting restaurant name
                                 String restaurantName = restaurantDocument.getId();
                                 // Getting cuisine field
-                                ArrayList <String> cuisineList = (ArrayList<String>) restaurantDocument.get("Cuisine");
+                                ArrayList<String> cuisineList = (ArrayList<String>) restaurantDocument.get("Cuisine");
                                 String cuisine = cuisineList.get(0);
 
                                 // Call the method to fetch menu and calculate average price for each restaurant
@@ -75,29 +75,25 @@ public class DisplayMethods {
                                         calcAverageRating(restaurantName, new AverageRatingCallback() {
                                             @Override
                                             public void onAverageRatingCalculated(double avgRating) {
-                                                // Retrieve the GeoPoint for this restaurant
-                                                getGeoLocation(restaurantName, new GeoLocationCallback() {
-                                                    @Override
-                                                    public void onGeoLocationReceived(GeoPoint GeoLocation) {
-                                                        // Both calculations and geolocation retrieval are complete for this restaurant
-                                                        Map<String, Object> restaurantDetails = new HashMap<>();
-                                                        restaurantDetails.put("Restaurant Name", restaurantName);
-                                                        restaurantDetails.put("Average Price", avgPrice);
-                                                        restaurantDetails.put("Average Rating", avgRating);
-                                                        restaurantDetails.put("GeoLocation", GeoLocation);
-                                                        restaurantDetails.put("Cuisine", cuisine);
+                                                // Note: Removed getGeoLocation call
 
-                                                        // Add the restaurant details to the list
-                                                        restaurantData.add(restaurantDetails);
+                                                // Both calculations are complete for this restaurant
+                                                Map<String, Object> restaurantDetails = new HashMap<>();
+                                                restaurantDetails.put("Restaurant Name", restaurantName);
+                                                restaurantDetails.put("Average Price", avgPrice);
+                                                restaurantDetails.put("Average Rating", avgRating);
+                                                // Note: Removed GeoLocation retrieval
+                                                restaurantDetails.put("Cuisine", cuisine);
 
-                                                        // Check if all restaurants have been processed
-                                                        restaurantsProcessed[0]++;
-                                                        if (restaurantsProcessed[0] == totalRestaurants) {
-                                                            // Notify the callback that all operations are complete
-                                                            callback.onCallback(restaurantData);
-                                                        }
-                                                    }
-                                                });
+                                                // Add the restaurant details to the list
+                                                restaurantData.add(restaurantDetails);
+
+                                                // Check if all restaurants have been processed
+                                                restaurantsProcessed[0]++;
+                                                if (restaurantsProcessed[0] == totalRestaurants) {
+                                                    // Notify the callback that all operations are complete
+                                                    callback.onCallback(restaurantData);
+                                                }
                                             }
                                         });
                                     }
@@ -109,6 +105,7 @@ public class DisplayMethods {
                     }
                 });
     }
+
 
     private void calcAveragePrices(String restaurantName, AveragePriceCallback callback) {
         // Create an ArrayList to store dish prices for this restaurant
@@ -192,6 +189,8 @@ public class DisplayMethods {
                 });
     }
 
+
+    /*
     private void getGeoLocation(String restaurantName, GeoLocationCallback callback) {
         db.collection("Restaurants")
                 .document(restaurantName)
@@ -223,7 +222,11 @@ public class DisplayMethods {
                         }
                     }
                 });
+
+
     }
+
+     */
 
     // Adding a firebase listener to the party
     public void addPartyListener(String partyCode, final PartyListenerCallback callback) {
@@ -300,5 +303,4 @@ public class DisplayMethods {
 //        return map;
 //        //Log.d(TAG, "Finalized details for " + restaurantName + ": " + details);
 //    }
-//
 }

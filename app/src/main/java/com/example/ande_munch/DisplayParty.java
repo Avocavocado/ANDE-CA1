@@ -194,20 +194,20 @@ public class DisplayParty extends AppCompatActivity {
                         ArrayList<HashMap<String, Integer>> cuisineList = (ArrayList<HashMap<String, Integer>>) resultMap.get("cuisineList");
                         double averagePrice = (double) resultMap.get("averagePrice");
                         double averageRating = (double) resultMap.get("averageRating");
-                        double averageDistance = (double) resultMap.get("averageDistance");
+                        // double averageDistance = (double) resultMap.get("averageDistance");
 
                         avgUserAttributes.put("cuisineList", cuisineList);
                         avgUserAttributes.put("averagePrice", averagePrice);
                         avgUserAttributes.put("averageRating", averageRating);
-                        avgUserAttributes.put("averageDistance", averageDistance);
+                        // avgUserAttributes.put("averageDistance", averageDistance);
 
                         Log.d("UserAttr", "Cuisine List: " + cuisineList);
                         Log.d("UserAttr", "Average Price: " + averagePrice);
                         Log.d("UserAttr", "Average Rating: " + averageRating);
-                        Log.d("UserAttr", "Average Distance: " + averageDistance);
+                        // Log.d("UserAttr", "Average Distance: " + averageDistance);
 
                         // Now that avgUserAttributes is updated, call filterRestaurants
-                        partyMethods.filterRestaurants(localRestaurantData, avgUserAttributes, DisplayParty.this, new PartyMethods.FilterResultsCallback() {
+                        partyMethods.filterRestaurants(localRestaurantData, avgUserAttributes, new PartyMethods.FilterResultsCallback() {
                             @Override
                             public void onFilterResults(ArrayList<HashMap<String, HashMap<String, Double>>> filteredRestaurantNames) {
                                 // Handle the filtered restaurant names

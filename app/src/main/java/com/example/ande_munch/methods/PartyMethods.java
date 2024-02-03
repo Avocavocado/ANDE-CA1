@@ -374,59 +374,56 @@ public class PartyMethods {
         return topCuisines;
     }
 
+
     public void filterRestaurants(ArrayList<Map<String, Object>> allRestaurantsData,
                                   HashMap<String, Object> avgUserAttributes,
-                                  Context context,
                                   FilterResultsCallback resultsCallback) {
 
+        ArrayList<HashMap<String, HashMap<String, Double>>> results = new ArrayList<>();
+        String[] TopCuisines = new String[3];
 
-        getLocation(context, new GeoPointCallback() {
-            @Override
-            public void onGeoPointReceived(GeoPoint userGeoPoint) {
-                ArrayList<HashMap<String, HashMap<String, Double>>> results = new ArrayList<>();
-                String[] TopCuisines = new String[3];
+        double avgPrice = (double) avgUserAttributes.get("averagePrice");
+        double avgRating = (double) avgUserAttributes.get("averageRating");
+        // No longer needed: double avgDistance = (double) avgUserAttributes.get("averageDistance");
+        ArrayList<HashMap<String, Integer>> userCuisinePreferences = (ArrayList<HashMap<String, Integer>>) avgUserAttributes.get("cuisineList");
 
-                double avgPrice = (double) avgUserAttributes.get("averagePrice");
-                double avgRating = (double) avgUserAttributes.get("averageRating");
-                double avgDistance = (double) avgUserAttributes.get("averageDistance");
-                ArrayList<HashMap<String, Integer>> userCuisinePreferences = (ArrayList<HashMap<String, Integer>>) avgUserAttributes.get("cuisineList");
+        ArrayList<String> userCuisinePreferenceList = filterUserCuisinePreferences(userCuisinePreferences.get(0));
+        System.out.println("User's Cuisine Preferences: " + userCuisinePreferenceList + " " + allRestaurantsData.size());
 
-                ArrayList<String> userCuisinePreferenceList = filterUserCuisinePreferences(userCuisinePreferences.get(0));
-                System.out.println("User's Cuisine Preferences: " + userCuisinePreferenceList + " " + allRestaurantsData.size());
+        for (Map<String, Object> restaurant : allRestaurantsData) {
+            String restaurantName = (String) restaurant.get("Restaurant Name");
+            double restaurantAvgPrice = (double) restaurant.get("Average Price");
+            double restaurantAvgRating = (double) restaurant.get("Average Rating");
+            // No longer needed: GeoPoint restaurantGeoLocation = (GeoPoint) restaurant.get("GeoLocation");
+            String restaurantCuisine = (String) restaurant.get("Cuisine");
 
-                for (Map<String, Object> restaurant : allRestaurantsData) {
-                    String restaurantName = (String) restaurant.get("Restaurant Name");
-                    double restaurantAvgPrice = (double) restaurant.get("Average Price");
-                    double restaurantAvgRating = (double) restaurant.get("Average Rating");
-                    GeoPoint restaurantGeoLocation = (GeoPoint) restaurant.get("GeoLocation");
-                    String restaurantCuisine = (String) restaurant.get("Cuisine");
+            if ((avgPrice == 0 || restaurantAvgPrice <= avgPrice) && (restaurantAvgRating >= avgRating || avgRating == 0)) {
+                HashMap<String, Double> restaurantMap = new HashMap<>();
+                // No longer needed: double restaurantDistance = calculateGeoLocationDiff(userGeoPoint, restaurantGeoLocation);
+                // restaurantMap.put("distance", restaurantDistance);
+                restaurantMap.put("averageRating", restaurantAvgRating);
+                restaurantMap.put("averagePrice", restaurantAvgPrice);
+                // No longer needed: System.out.println("Restaurant distance: " + restaurantDistance + " " + avgDistance);
 
-
-                    if ((avgPrice == 0 || restaurantAvgPrice <= avgPrice) && (restaurantAvgRating >= avgRating || avgRating == 0)) {
-                        HashMap<String, Double> restaurantMap = new HashMap<>();
-                        double restaurantDistance = calculateGeoLocationDiff(userGeoPoint, restaurantGeoLocation);
-                        restaurantMap.put("distance", restaurantDistance);
-                        restaurantMap.put("averageRating", restaurantAvgRating);
-                        restaurantMap.put("averagePrice", restaurantAvgPrice);
-                        System.out.println("Restaurant distance: " + restaurantDistance + " " + avgDistance);
-
-                        if (userCuisinePreferenceList.contains(restaurantCuisine)) {
-                            System.out.println("Adding restaurant: " + restaurantName + " to results");
-                            HashMap<String, HashMap<String, Double>> resultMap = new HashMap<String, HashMap<String, Double>>();
-                            resultMap.put(restaurantName, restaurantMap);
-                            results.add(resultMap);
-                        } else {
-                            System.out.println("Restaurant " + restaurantName + " does not match cuisine preferences");
-                        }
-                    }
+                if (userCuisinePreferenceList.contains(restaurantCuisine)) {
+                    System.out.println("Adding restaurant: " + restaurantName + " to results");
+                    HashMap<String, HashMap<String, Double>> resultMap = new HashMap<String, HashMap<String, Double>>();
+                    resultMap.put(restaurantName, restaurantMap);
+                    results.add(resultMap);
+                } else {
+                    // Print out the reason why the restaurant is not filtered
+                    System.out.println("Restaurant " + restaurantName + " does not match cuisine preferences");
                 }
-
-                results = sortRestaurantResults(results);
-
-                System.out.println("Filtered Restaurants: " + results);
-                resultsCallback.onFilterResults(results);
+            } else {
+                // Print out the reason why the restaurant is not filtered
+                System.out.println("Restaurant " + restaurantName + " does not meet the filtering conditions");
             }
-        });
+        }
+
+        results = sortRestaurantResults(results);
+
+        System.out.println("Filtered Restaurants: " + results);
+        resultsCallback.onFilterResults(results);
     }
 
     private ArrayList<HashMap<String, HashMap<String, Double>>> sortRestaurantResults(ArrayList<HashMap<String, HashMap<String, Double>>> results) {
@@ -434,12 +431,16 @@ public class PartyMethods {
             HashMap<String, Double> restaurant1 = o1.get(o1.keySet().toArray()[0]);
             HashMap<String, Double> restaurant2 = o2.get(o2.keySet().toArray()[0]);
 
-            double restaurant1Distance = restaurant1.get("distance");
-            double restaurant2Distance = restaurant2.get("distance");
+            // No longer needed: double restaurant1Distance = restaurant1.get("distance");
+            // No longer needed: double restaurant2Distance = restaurant2.get("distance");
 
-            if (restaurant1Distance < restaurant2Distance) {
+            // The comparison is done based on averageRating
+            double restaurant1Rating = restaurant1.get("averageRating");
+            double restaurant2Rating = restaurant2.get("averageRating");
+
+            if (restaurant1Rating > restaurant2Rating) {
                 return -1;
-            } else if (restaurant1Distance > restaurant2Distance) {
+            } else if (restaurant1Rating < restaurant2Rating) {
                 return 1;
             } else {
                 return 0;
@@ -449,6 +450,7 @@ public class PartyMethods {
         return results;
     }
 
+    /*
     private double calculateGeoLocationDiff(GeoPoint userLocation, GeoPoint restaurantLocation) {
         double userLatitude = userLocation.getLatitude();
         double userLongitude = userLocation.getLongitude();
@@ -477,6 +479,9 @@ public class PartyMethods {
         return distance;
     }
 
+     */
+
+    /*
     public void getLocation(Context context, final GeoPointCallback geoPointCallback) {
         LocationHelper locationHelper = new LocationHelper(context);
         locationHelper.getCurrentLocation(new LocationHelper.LocationCallback() {
@@ -499,6 +504,8 @@ public class PartyMethods {
             }
         });
     }
+
+     */
 
 //    public interface GeoPointCallback {
 //        void onGeoPointReceived(GeoPoint geoPoint);
