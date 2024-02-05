@@ -246,7 +246,13 @@ public class DashboardFragment extends Fragment {
                             HashMap<String, Object> userDetails = new HashMap<>();
                             userDetails.put("Diet", document.getString("Diet"));
                             userDetails.put("ProfileImage", document.getString("ProfileImage"));
-                            userDetails.put("Username", document.getString("Username"));
+
+                            if (document.getString("Username") == null) {
+                                userDetails.put("Username", "Anonymous");
+                            } else {
+                                userDetails.put("Username", document.getString("Username"));
+                            }
+
                             userDetails.put("IsLeader", true);
 
                             userDataMap.put(emailAccount, userDetails);
